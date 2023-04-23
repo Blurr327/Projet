@@ -4,8 +4,10 @@ Ce projet a pour but le partage de l'expérience mathématique d'une maniere plu
 Pour tester le site sur un serveur locale, il faut installer xampp. 
 Vous trouveriez les intructions précises [içi](https://drive.google.com/file/d/1pUH2w41q2nd7mExbjuDU9Ha8weh5dxPh/view?usp=sharing)
 ## Contributions et répartition du travail
-| - | Gestion et Organisation du travail | Page d'inscription | Page Profil | Page d'actualité | Gestion des comptes administrateurs | Implémentation des commentaires et des likes | 
-
+|      -      | Page d'inscription | Page de profil | Page d'actualité |
+| ----------- | ------------------ | -------------- | ---------------- |
+| Marius      | commentaires...    | ...            | ...              | 
+| Mohamed     | commentaires...    | ...            | ...              | 
 
 [^1]: Groupe 27, Marius Lecomte et Mohamed BEN EL MOSTAPHA.
 
