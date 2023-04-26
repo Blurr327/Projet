@@ -2,9 +2,9 @@
 
 class Verification{
     
-    public function prepare_error_msg($error_msgs,$type){
+    public function prepare_error_msg($error_msgs,$type){ // prépare le message d'erreur pour l'affichage
          if(isset($error_msgs[$type])){
-            return "<p style='color :#990000'>".$error_msgs[$type]."</p>";
+            return "<p style='color :#990000;font-size:x-small'>".$error_msgs[$type]."</p>";
          }
          return "";
     }
@@ -16,22 +16,22 @@ class Verification{
     }
 
    public function verify_required(&$data, &$required_errors, $required){ // vérification des champs requis
-        $ok=true;
+      
         foreach($required as $value){
             if(empty($data[$value])){
                 $ok=false;
                 $required_errors[]=$value;
             }
         }
-        return $ok;
+     
     }
 
-    public function unique_nickname($nickname,$result_of_fetch){ // vérification de l'unicité du pseudo
+    public function unique_nickname($result_of_fetch){ // vérification de l'unicité du pseudo
             if(!$result_of_fetch){
                 echo "Requête invalide";
                 return false;
             }
-            return mysqli_num_rows($result) === 0;
+            return mysqli_num_rows($result_of_fetch) === 0;
     }
         
     public function verify_password_format($password){ 
@@ -56,12 +56,12 @@ class Verification{
         }
         return false;
     }
-
-    public function verify_pwd_and_nickname(&$data,&$errors,$connection){
+    
+    public function verify_pwd_and_nickname(&$data,&$errors,$connection){ // vérifie l'existence de l'utilisateur et la validité du mot de passe
         $ok=false;
         $result = fetch_user($connection,$data['pseudo']);
         if($result){
-            if(!unique_nickname($data["pseudo"],$result)){
+            if(!unique_nickname($result)){
                 $ok = verify_password_validity($data['password'],$result);
                 $errors[]=($ok) ? "":"password";
              }
@@ -71,9 +71,40 @@ class Verification{
         }
         return $ok;
     }
+    
+    public function verify_format(&$data,&$format_errors,$connection){  // vérifie la validité des données
+    
+        $VER = new Verification();
+        $DB=new DataBase();
+        foreach($data as $field => $given_value){
+            if($field === "password"){
+                if($VER->verify_password_format($given_value)) {
+                    $ok=false;
+                    $format_errors[]=$field;
+                }
+            }
+            else if($field ==="nom"|| $field ==="prenom"){
+                if($VER->verify_name_format($given_value)) {
+                    $ok=false;
+                    $format_errors[]=$field;
+                }
+            }
+            else if($field ==="pseudo"){
+                if($VER->verify_nickname_format($given_value)) {
+                    $ok=false;
+                    $format_errors[]=$field;
+                }
+                else if(!$VER->unique_nickname($DB->fetch_user($connection,$given_value))){
+                    $ok=false;
+                    $format_errors[]="pseudo1";
+                }
+            }
+        }
+    
+    }
 
-    public function is_admin(&$data,$connection){
-        $result = fetch_user($connection,$data['pseudo']);
+    public function is_admin(&$session,$connection){ // vérifie si l'utilisateur courant est admin
+        $result = fetch_user($connection,$session['pseudo']);
         if($result){
             $line=mysqli_fetch_assoc($result);
             return $line['admin'] == 1;

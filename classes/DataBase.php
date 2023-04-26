@@ -1,12 +1,12 @@
 <?php
 class DataBase{
-    private static $host="localhost";
-    private static $username="root";
-    private static $password="";
-    private static $database="BaseBlackboard";
+    private $host="localhost";
+    private $username="root";
+    private $password="";
+    private $database="BaseBlackboard";
 
     public function connect(){ // connexion à la base de donnée
-        $connection= mysqli_connect($this->host,$this->username,$this->password,$this->databse);
+        $connection= mysqli_connect($this->host,$this->username,$this->password,$this->database);
         if(!$connection){
             return "Pas de connexion au serveur";
         }
@@ -28,7 +28,7 @@ class DataBase{
     }
 
     public function insert_user($connection,$firstname,$lastname,$nickname,$password){ // ajoute l'utilisateur à la base de donnée
-        $req='INSERT INTO users(firstname, lastname, nickname, password) VALUES (\''. mysqli_real_escape_string($connexion,$firstname) . '\',\''. mysqli_real_escape_string($connexion,$lastname)  . '\',\'' . mysqli_real_escape_string($connexion,$nickname) . '\',\''. md5(mysqli_real_escape_string($connexion,$password)) .'\')';
+        $req='INSERT INTO users(firstname, lastname, nickname, password, signup_date) VALUES (\''. mysqli_real_escape_string($connection,$firstname) . '\',\''. mysqli_real_escape_string($connection,$lastname)  . '\',\'' . mysqli_real_escape_string($connection,$nickname) . '\',\''. md5(mysqli_real_escape_string($connection,$password)) .'\',' .'\')';
         return $this->query($connection,$req);
     }
     
