@@ -64,7 +64,7 @@ class Register{
                     $error_messages["pseudo"]="le pseudo ne contient que des lettres et des nombres.";
                 }
                 else if($error==="pseudo1"){
-                $error_messages["pseudo1"]="cet utilisateur existe déjà";
+                    $error_messages["pseudo1"]="cet utilisateur existe déjà";
                 }
             }
         }
