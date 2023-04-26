@@ -29,7 +29,7 @@ class Login{
         <!DOCTYPE html>
         <html lang='fr'>
             <head>
-                <title>Blackboard : Login Page<title>
+                <title>Blackboard : Login Page</title>
                 <meta charset='utf8'>
             </head>
             <body>
@@ -50,7 +50,8 @@ class Login{
         </html>
         ";
     }
-    public function display_login_page(&$data){
+
+    public function display_login_page(&$data,&$session){
         $VER = new Verification();
         $DB = new DataBase();
         $required= array("pseudo","password");
@@ -64,7 +65,11 @@ class Login{
         $this->error_msgs_login($error_msgs,$req_errors,$other_errors);
         $password_error=$VER->prepare_error_msg($error_msgs,'password');
         $nickname_error=$VER->prepare_error_msg($error_msgs,'pseudo');
-        if(empty($error_msgs)) return true;
+        if(empty($error_msgs)){ 
+            $session['pseudo']=$data['pseudo'];
+            if($VER->is_admin($session,$connection)) $session['admin']=1;
+            return false;
+        }
         return $this->simple_log_display($nickname_error,$password_error);
     }
 }

@@ -15,9 +15,9 @@
         switch($action){
             case 'login':
                 if($_SERVER['REQUEST_METHOD']==='POST'){
-                  $ok=$LOG->display_login_page($_POST);
-                  if($ok) header("Location: main/timeline.php");
-                  echo $ok;
+                  $problem=$LOG->display_login_page($_POST,$_SESSION);
+                  if(!$problem) header("Location: main/timeline.php");
+                  echo $problem;
                }
                 else {
                    echo $LOG->simple_log_display("","");
@@ -25,9 +25,9 @@
             break;
             case 'register': 
                 if($_SERVER['REQUEST_METHOD']==='POST'){
-                    $ok=$REG->display_register_page($_POST);
-                   if(!$ok) echo"<p style='color: green;font-size:small'>Enregistrement Réussi</p><br>";header("refresh:5;Location: index.php?action=login");
-                   echo $ok;
+                    $problem=$REG->display_register_page($_POST);
+                   if(!$problem) echo"<p style='color: green;font-size:small'>Enregistrement Réussi</p><br>";header("refresh:3;url=index.php?action=login");
+                   echo $problem;
                 }
                 else {
                     echo $REG->simple_reg_display("","","","");

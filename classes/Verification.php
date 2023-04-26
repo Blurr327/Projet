@@ -58,11 +58,12 @@ class Verification{
     }
     
     public function verify_pwd_and_nickname(&$data,&$errors,$connection){ // vérifie l'existence de l'utilisateur et la validité du mot de passe
+        $DB= new DataBase();
         $ok=false;
-        $result = fetch_user($connection,$data['pseudo']);
+        $result = $DB->fetch_user($connection,$data['pseudo']);
         if($result){
-            if(!unique_nickname($result)){
-                $ok = verify_password_validity($data['password'],$result);
+            if(!$this->unique_nickname($result)){
+                $ok = $this->verify_password_validity($data['password'],$result);
                 $errors[]=($ok) ? "":"password";
              }
             else {
@@ -104,7 +105,8 @@ class Verification{
     }
 
     public function is_admin(&$session,$connection){ // vérifie si l'utilisateur courant est admin
-        $result = fetch_user($connection,$session['pseudo']);
+        $DB= new DataBase();
+        $result = $DB->fetch_user($connection,$session['pseudo']);
         if($result){
             $line=mysqli_fetch_assoc($result);
             return $line['admin'] == 1;

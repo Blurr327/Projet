@@ -11,8 +11,8 @@ class DefaultPage{
             <body>
                 <header>
                     <h1>Blackboard<h1>
-                    <p>Share your passion for mathematics and help others !</p>
                 </header>
+                <h2>Share your passion for mathematics and help others !</h2>
                 <div id='buttons'>
                     <section id='signup'>
                         <h3><a href='?action=register'>Inscription</a></h3>

@@ -9,6 +9,7 @@ Après l'installation de xampp, suivez les instructions ci-dessous :
 Pour Mac, vous copiez : /Applications/xampp/xamppfiles/bin/mysql -u root -p.
 Pour Windows, \xampp\mysql\bin\mysql -u root -p.
 3. saisir le mot de passe et puis tapez : source -chemin asbolu vers : schema_projet_io2.sql-.
+Le fichier sql crée automatiquement un utilisateur admin de pseudo 'zayn' et de mot de passe 123.
 ## Contributions et répartition du travail
 |      -      | Page d'inscription        | Page de profil | Page d'actualité |
 | ----------- | ------------------------  | -------------- | ---------------- |

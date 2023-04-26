@@ -1,8 +1,9 @@
 <?php
 
 class Register{
-
+    
     public function error_msgs_register(&$error_messages,&$required_errors,&$format_errors){ // remplie le tableau des messages d'erreurs
+
         if(!empty($required_errors)){
             foreach($required_errors as $error){
                 if($error === "password"){
@@ -19,6 +20,7 @@ class Register{
                 }
             }
         }
+
         else {
             foreach($format_errors as $error){
                 if($error === "password"){
@@ -38,6 +40,7 @@ class Register{
                 }
             }
         }
+
     }
 
     public function simple_reg_display($firstname_error,$lastname_error,$nickname_error,$password_error){
@@ -81,6 +84,7 @@ class Register{
         $req_errors=array();
         $format_errors=array();
         $connection=$DB->connect();
+        $VER->prepare_data($data);
         $VER->verify_required($data,$req_errors,$required);
         if(empty($req_errors)) $VER->verify_format($data,$format_errors,$connection);
         $this->error_msgs_register($error_msgs,$req_errors,$format_errors);
