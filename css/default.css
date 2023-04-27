@@ -1,0 +1,96 @@
+* {
+    background-color: #5F9A80;
+}
+body *:not(#about){
+    text-align:center;
+    color:white;
+    font-family:'Avantgarde', 'TeX Gyre Adventor', 'URW Gothic L', sans-serif;
+    font-weight:lighter;
+}
+h1 {
+    display:inline-block;
+    margin-top:13px;
+    font-weight:lighter;
+    font-size:280%;
+}
+#moto {
+    display:block;
+    box-sizing:border-box;
+    text-align:center;
+    
+    
+}
+cite {
+    display:block;
+    box-sizing:border-box;
+    text-align:center;
+    
+}
+#about{
+    color:white;
+    font-family:'Avantgarde', 'TeX Gyre Adventor', 'URW Gothic L', sans-serif;
+    font-weight:lighter;
+    display:inline-block;
+    font-size:xx-small;
+    position:relative;
+    top:590px;
+    padding:0px;
+    margin:0px;
+    text-align:left;
+}
+div {
+    border:1px double white;
+    border-radius:10px;
+    padding:10px;
+    width:220px;
+    height:80px;
+    display:flex;
+    margin-top:auto;
+    align-items: center;
+    justify-content: center;
+    position:absolute;
+    top:50%;
+    left:50%;
+    transform:translate(-50%,-200%);
+}
+a {
+    color:white;
+    font-weight:lighter;
+    text-decoration: none;
+}
+#signup a ,#login a{
+    
+    display:flex;
+    align-items: center;
+    justify-content: center;
+    color:white;
+    box-sizing:border-box;
+    background-color:#5F9A80;
+    border:2px solid #5F9A80;
+    border-radius:10px;
+    margin:5px;
+    height:50%;
+    background-color:white;
+    color:#5F9A80;
+    padding:5px;
+    transition:all .3s ease-out;
+}
+#login:hover a,#signup:hover a{
+    display:flex;
+    align-items: center;
+    justify-content: center;
+    color:white;
+    box-sizing:border-box;
+    background-color:#5F9A80;
+    border:2px solid #5F9A80;
+    border-radius:10px;
+    font-size:110%;
+    margin:5px;
+    height:50%;
+    background-color:white;
+    color:#5F9A80;
+    padding:5px;
+    transition:all .3s ease-in;
+}
+
+

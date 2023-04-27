@@ -7,12 +7,15 @@ class DefaultPage{
             <head>
                 <title>Blackboard : Welcome !</title>
                 <meta charset='utf8'>
+                <link rel='stylesheet' href='css/default.css'>
             </head>
             <body>
                 <header>
                     <h1>Blackboard<h1>
                 </header>
-                <h2>Share your passion for mathematics and help others !</h2>
+                <blockquote id='moto'>The essence of math is not to make simple things complicated, but to make complicated things simple.
+                </blockquote>
+                <cite>— Stan Gudder</cite>
                 <div id='buttons'>
                     <section id='signup'>
                         <h3><a href='?action=register'>Inscription</a></h3>

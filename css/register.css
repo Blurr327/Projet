@@ -1,0 +1,63 @@
+* {
+    background-color: #5F9A80;
+}
+body,h3 {
+    text-align:center;
+    color:white;
+    font-family:'Avantgarde', 'TeX Gyre Adventor', 'URW Gothic L', sans-serif;
+    font-weight:lighter;
+}
+h1 {
+    display:inline-block;
+    margin-top:13px;
+    font-weight:lighter;
+    font-size:280%;
+    margin-bottom:100px;
+}
+h3{
+    font-size:110%;
+}
+a {
+    text-align:center;
+    color:white;
+    font-family:'Avantgarde', 'TeX Gyre Adventor', 'URW Gothic L', sans-serif;
+    font-weight:lighter;
+    margin-bottom:120px;
+    text-decoration: none;
+    
+}
+label {
+    box-sizing: border-box;
+    display: inline-block;
+    text-align: right; 
+    width:100px;
+    font-size:110%;
+}
+input[type="text"],input[type="password"]{
+    background-color:white;
+    border-radius:5px;
+    color:#5F9A80;
+    border:1px solid white;
+    margin:5px;
+    margin-right:50px;
+    font-size:110%;
+}
+input[type="password"]{
+    margin-bottom:20px;
+}
+input[type="submit"],input[type="reset"]{
+    transition:all .3s ease-out;
+    background-color: white;
+      border-radius: 10px;
+      border:1px solid white;
+      color:#5F9A80;
+      font-size:110%;
+}
+span.actions{
+    margin-left:70px;
+  
+}
+input[type="submit"]:hover,input[type="reset"]:hover{
+    font-size:120%;
+    transition:all .3s ease-in;
+}
