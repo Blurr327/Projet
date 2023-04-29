@@ -1,10 +1,16 @@
 * {
-    background-color:#5F9A80;
+    background-color:#34433c;
 }
-body,a,h3 {
+body,h3,input[type="submit"],input[type="reset"] {
     text-align:center;
     color:white;
-    font-family:'Avantgarde', 'TeX Gyre Adventor', 'URW Gothic L', sans-serif;
+    font-family:'Times New Roman';
+    font-weight:lighter;
+}
+a{
+    text-align:center;
+    color:white;
+    font-family:'Times New Roman';
     font-weight:lighter;
 }
 h1 {
@@ -17,11 +23,14 @@ h1 {
 input[type='submit'], input[type='reset']{
     border:1px solid white;
     border-radius:10px;
-    color:#5F9A80;
+    color:#34433c;
     background-color:white;
     transition:all .3s ease-out;
     margin-top:15px;
+    padding-right:1px;
+    padding-left:1px;
     font-size:110%;
+    padding:2px;
 }
 span.actions{
     margin-left:100px;
@@ -32,22 +41,30 @@ label {
     text-align: right; 
     width:100px;
     font-size:110%;
+    
 }
 input[type='submit']:hover, input[type='reset']:hover{
     border:1px solid white;
     border-radius:10px;
-    color:#5F9A80;
+    color:#34433c;
     font-size:120%;
     background-color:white;
     transition:all .3s ease-in;
 }
 input[type='password'], input[type='text']{
-    border:1px solid white;
+    border:2px solid white;
     border-radius:5px;
     background-color:white;
-    color:#5F9A80;
+    color:#34433c;
     margin:5px;
     font-size:110%;
+}
+::placeholder{
+    font-family:'Times New Roman';
+    font-weight:lighter;
+}
+form{
+    margin-right:95px;
 }
 
 

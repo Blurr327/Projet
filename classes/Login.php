@@ -37,8 +37,9 @@ class Login{
             <header>
             <a href='?action=default'><h1 id='webname'>Blackboard</h1></a>
             </header>
-                  <form action='index.php?action=login' method='post'>
                   <h3>Connectez-vous : </h3>
+                  <form action='index.php?action=login' method='post'>
+                 
                     <label for='pseudo'>Pseudo : </label>
                     <input type='text' name='pseudo' placeholder='pseudo' id='pseudo'><br>
                          $nickname_error 
@@ -58,6 +59,7 @@ class Login{
     public function display_login_page(&$data,&$session){
         $VER = new Verification();
         $DB = new DataBase();
+        $USER= new User();
         $required= array("pseudo","password");
         $error_msgs=array();
         $other_errors=array(); // erreurs pour : mot de passe incorrect ou utilisateur inexistant
@@ -70,8 +72,9 @@ class Login{
         $password_error=$VER->prepare_error_msg($error_msgs,'password');
         $nickname_error=$VER->prepare_error_msg($error_msgs,'pseudo');
         if(empty($error_msgs)){ 
+            $session['id']=$USER->get_user_id($connection,$data['pseudo']);
             $session['pseudo']=$data['pseudo'];
-            if($VER->is_admin($session,$connection)) $session['admin']=1;
+            if($USER->is_admin($session,$connection)) $session['admin']=1;
             return false;
         }
         return $this->simple_log_display($nickname_error,$password_error);

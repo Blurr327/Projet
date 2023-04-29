@@ -1,10 +1,10 @@
 * {
-    background-color: #5F9A80;
+    background-color: #34433c;
 }
-body *:not(#about){
+body *:not(#about,h1){
     text-align:center;
     color:white;
-    font-family:'Avantgarde', 'TeX Gyre Adventor', 'URW Gothic L', sans-serif;
+    font-family:'Times New Roman';
     font-weight:lighter;
 }
 h1 {
@@ -28,7 +28,7 @@ cite {
 }
 #about{
     color:white;
-    font-family:'Avantgarde', 'TeX Gyre Adventor', 'URW Gothic L', sans-serif;
+    font-family:'Times New Roman';
     font-weight:lighter;
     display:inline-block;
     font-size:xx-small;
@@ -56,6 +56,7 @@ div {
 a {
     color:white;
     font-weight:lighter;
+    font-family:'Times New Roman';
     text-decoration: none;
 }
 #signup a ,#login a{
@@ -65,13 +66,13 @@ a {
     justify-content: center;
     color:white;
     box-sizing:border-box;
-    background-color:#5F9A80;
-    border:2px solid #5F9A80;
+    background-color:#34433c;
+    border:2px solid #34433c;
     border-radius:10px;
     margin:5px;
     height:50%;
     background-color:white;
-    color:#5F9A80;
+    color:#34433c;
     padding:5px;
     transition:all .3s ease-out;
 }
@@ -81,14 +82,14 @@ a {
     justify-content: center;
     color:white;
     box-sizing:border-box;
-    background-color:#5F9A80;
-    border:2px solid #5F9A80;
+    background-color:#34433c;
+    border:2px solid #34433c;
     border-radius:10px;
     font-size:110%;
     margin:5px;
     height:50%;
     background-color:white;
-    color:#5F9A80;
+    color:#34433c;
     padding:5px;
     transition:all .3s ease-in;
 }

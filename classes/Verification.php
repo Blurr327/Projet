@@ -4,7 +4,7 @@ class Verification{
     
     public function prepare_error_msg($error_msgs,$type){ // prépare le message d'erreur pour l'affichage
          if(isset($error_msgs[$type])){
-            return "<p style='color :#990000;font-size:x-small'>".$error_msgs[$type]."</p>";
+            return "<p style='color :#990000;font-size:small;opacity:0.75;'>".$error_msgs[$type]."</p>";
          }
          return "";
     }
@@ -59,8 +59,9 @@ class Verification{
     
     public function verify_pwd_and_nickname(&$data,&$errors,$connection){ // vérifie l'existence de l'utilisateur et la validité du mot de passe
         $DB= new DataBase();
+        $USER= new User();
         $ok=false;
-        $result = $DB->fetch_user($connection,$data['pseudo']);
+        $result = $USER->fetch_user($connection,$data['pseudo']);
         if($result){
             if(!$this->unique_nickname($result)){
                 $ok = $this->verify_password_validity($data['password'],$result);
@@ -77,6 +78,7 @@ class Verification{
     
         $VER = new Verification();
         $DB=new DataBase();
+        $USER= new User();
         foreach($data as $field => $given_value){
             if($field === "password"){
                 if($VER->verify_password_format($given_value)) {
@@ -95,7 +97,7 @@ class Verification{
                     $ok=false;
                     $format_errors[]=$field;
                 }
-                else if(!$VER->unique_nickname($DB->fetch_user($connection,$given_value))){
+                if(!$VER->unique_nickname($USER->fetch_user($connection,$given_value))){
                     $ok=false;
                     $format_errors[]="pseudo1";
                 }
@@ -104,15 +106,6 @@ class Verification{
     
     }
 
-    public function is_admin(&$session,$connection){ // vérifie si l'utilisateur courant est admin
-        $DB= new DataBase();
-        $result = $DB->fetch_user($connection,$session['pseudo']);
-        if($result){
-            $line=mysqli_fetch_assoc($result);
-            return $line['admin'] == 1;
-        }
-        return false;
-    }
     
 }
 

@@ -39,7 +39,8 @@ CREATE TABLE IF NOT EXISTS `BaseBlackboard`.`follower_and_followed` (
 CREATE TABLE IF NOT EXISTS `BaseBlackboard`.`posts` (
   `post_id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
   `author_id` INT UNSIGNED NOT NULL,
-  `post` TEXT NULL,
+  `post` TEXT NOT NULL,
+  `post_title` TEXT NOT NULL,
   `creation_date` DATETIME NOT NULL,
   PRIMARY KEY (`post_id`),
     FOREIGN KEY (`author_id`)
@@ -74,4 +75,4 @@ CREATE TABLE IF NOT EXISTS `BaseBlackboard`.`likes` (
     FOREIGN KEY (`liked_id`)
     REFERENCES `BaseBlackboard`.`posts` (`post_id`));
 
-INSERT INTO users(firstname,lastname,nickname,`password`,signup_date) VALUES ('superuser','root','zayn','202cb962ac59075b964b07152d234b70',NOW());
+INSERT INTO users(firstname,lastname,nickname,`password`,signup_date, `admin`) VALUES ('superuser','root','zayn','202cb962ac59075b964b07152d234b70',NOW(),1);
