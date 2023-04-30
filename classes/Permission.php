@@ -12,7 +12,7 @@ class Permission{
         </head>
         <body>
             <header>
-            <h1>Vous n'avez pas le droit d'accéder à cette page</h1>
+            <h1>Vous n'avez pas le droit de continuer</h1>
             </header>
         </body>
         </html>

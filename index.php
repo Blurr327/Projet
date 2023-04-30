@@ -17,7 +17,7 @@
             case 'login':
                 if($_SERVER['REQUEST_METHOD']==='POST'){
                   $problem=$LOG->display_login_page($_POST,$_SESSION);
-                  if(!$problem) header("Location: timeline.php?show=1");
+                  if(!$problem) header("Location: timeline.php?show=1&order=recent");
                   echo $problem;
                }
                 else {

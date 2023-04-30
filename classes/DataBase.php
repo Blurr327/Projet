@@ -10,7 +10,7 @@ class DataBase{
         if(!$connection){
             return "Pas de connexion au serveur";
         }
-        mysqli_set_charset($connection,'utf8');
+        mysqli_set_charset($connection,'utf8mb4');
         return $connection;
     }
 

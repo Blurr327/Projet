@@ -45,7 +45,7 @@ class User{
     }
 
     public function privileges($connection, $session, $associated_user_id){ // renvoie vrai si l'utilisateur courant a le droit de supprimer et modifier un contenu/profile/commentaire crée par l'utilisateur de l'id $associated_user_id
-        return $this->is_admin($session,$connection) || $associated_user_id=$session['id'];
+        return $this->is_admin($session,$connection) || $associated_user_id===$session['id'];
     }
 
 }

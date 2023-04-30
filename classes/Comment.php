@@ -8,10 +8,37 @@ class Comment{
         return $DB->query($connection,$req);
     }
 
-    public function delete_comment($connection,$comment_id){ // supprime le commentaire
+    public function delete_all_comments_of($connection, $post_id){
+        $comments_array= $this->get_comments($connection, $post_id,'all');
+        foreach($comments_array as $comment_array){
+            $this->delete_comment($connection, $comment_array['comment_id'], 'deletepost');
+        }
+        return;
+    }
+
+    
+
+    public function get_num_comments($connection, $post_id){
+        $DB= new DataBase();
+        $req="SELECT * FROM comments WHERE post_id=$post_id";
+        $result=$DB->query($connection, $req);
+        return mysqli_num_rows($result);
+    }
+
+    public function delete_comment($connection,$comment_id, $session){ // supprime le commentaire
         $DB=new DataBase();
+        $USER= new user();
+        $PERM= new Permission();
+        $author_info=$this->fetch_comment_author_info($connection, $comment_id);
+        if($session != 'deletepost'){ // si on supprime un post, on supprime tous les commentaires
+            $privileges=$USER->privileges($connection, $session, $author_info['author_id']);
+            if(!$privileges){
+                return false;
+            }
+        }
         $req="DELETE FROM comments WHERE comment_id=$comment_id";
-        return $DB->query($connection,$req);
+        $DB->query($connection,$req);
+        return true;
     }
 
     public function modify_comment($connection,$comment_id,$new_text){ // modifie le commentaire
@@ -20,10 +47,11 @@ class Comment{
         return $DB->query($connection,$req);
     }
 
-    public function get_comments($connection,$post_id,$num_shown){ // renvoie un tableau de tableau associatifs constitué de la commentaire/l'auteur/ladata et l'id du commentaire
+    public function get_comments($connection,$post_id,$num_shown){ // renvoie un tableau de tableau associatifs constitué de la commentaire/l'auteur/ladate et l'id du commentaire
         $DB = new DataBase();
         $USER= new User();
-        $req="SELECT comment, author_id, comment_id, creation_date, nickname FROM comments, users WHERE comments.post_id=$post_id AND id=author_id ORDER BY creation_date LIMIT 0,$num_shown"; // numshown = le nombre de commentaire affiché
+        $limitornot=($num_shown=== 'all') ? "" : "LIMIT 0,$num_shown";
+        $req="SELECT comment, author_id, comment_id, creation_date, nickname FROM comments, users WHERE comments.post_id=$post_id AND id=author_id ORDER BY creation_date $limitornot"; // numshown = le nombre de commentaire affiché
         $result=$DB->query($connection,$req);
         $rows=$result->fetch_all(MYSQLI_ASSOC);
         return $rows;
@@ -32,8 +60,8 @@ class Comment{
     public function display_comment_under_post($author_id, $creation_date,$comment, $nickname, $comment_id){ // affiche une commentaire
         return "
         <div class='comment'>
-            <a class='comment_author' href='profile.php?userid=$author_id'>$nickname</a>
-            <a href='comment.php?action=show&commentid=$commment_id'><p class='commentcontent'>$comment</p></a>
+            <a class='comment_author' href='profile.php?action=show&userid=$author_id&show=1'>$nickname</a>
+            <a href='comment.php?action=show&commentid=$comment_id'><p class='commentcontent'>$comment</p></a>
             <p class='date'>$creation_date</p>
         </div><br>
         ";
@@ -45,16 +73,16 @@ class Comment{
         foreach($comments as $comment_array){
             $comments_display .= $this->display_comment_under_post($comment_array['author_id'],$comment_array['creation_date'],$comment_array['comment'], $comment_array['nickname'], $comment_array['comment_id']);
         }
-        return $comment_display;
+        return $comments_display;
     }
 
     public function fetch_comment_author_info($connection, $comment_id){
         $DB= new DataBase();
         $comment_id= intval($comment_id);
-        $req="SELECT nickname, id, comment, post_id FROM comments, users WHERE comment_id=$comment_id AND author_id=id";
+        $req="SELECT nickname, id, comment, post_id, author_id FROM comments, users WHERE comment_id=$comment_id AND author_id=id";
         $result = $DB->query($connection, $req);
         $rows = $result->fetch_all(MYSQLI_ASSOC);
-        return $rows;
+        return $rows[0];
     }
 
     public function simple_display_comment_page($connection, $get, $session){
@@ -72,7 +100,7 @@ class Comment{
 
         if($privileges){
             $modify_comment="<a class='buttons' href='comment.php?action=modcomment&commentid=$comment_id'>Modifier</a>";
-            $delete_comment="<input type='submit' name='deletecomment' value='Supprimer'>";
+            $delete_comment="<a class='buttons' href='comment.php?action=deletecomment&commentid=$comment_id' >Supprimer</a>";
         }
         return "
             <!DOCTYPE html>
@@ -85,20 +113,20 @@ class Comment{
                     <nav>
                         <a href='post.php?action=show&postid=$post_id&show=1'><pre><< Revenir au post</pre></a>
                     </nav>
-                    <a id='commentauthor' href='profile.php?userid=$author_id&show=1'>$author_nickname</a>
+                    <a id='commentauthor' href='profile.php?action=show&userid=$author_id&show=1'>$author_nickname</a>
                     <div class='comment'>
                         <p>$authors_comment</p>
                     </div><br>
                     $modify_comment
-                    <form action='comment.php?action=show&commentid=$comment_id' method='post'>
                     $delete_comment
-                    </form>
                 </body>
             </html>
         ";
     }
+    
+    
 
-    public function simple_display_mod_page($field_error, $get, $session, $data){
+    public function simple_display_mod_page($connection ,$field_error, $get, $session){
         $USER = new User();
         $PERM = new Permission();
         $comment_id= (abs(intval($get['commentid'])) === 0) ? 1 : abs(intval($get['commentid']));
@@ -106,11 +134,7 @@ class Comment{
         $post_id= $author_info['post_id'];
         if(!$USER->privileges($connection, $session, $author_info['author_id'])){
             return $PERM->forbidden_page();
-        }
-        if(empty($data['deletecomment'])){
-            $this->delete_comment($connection, $comment_id);
-            return false;
-        }
+        }   
         $old_comment=$author_info['comment'];
         return "
         <!DOCTYPE html>
@@ -123,7 +147,7 @@ class Comment{
             <nav>
             <a href='post.php?action=show&postid=$post_id&show=1'><pre><< Revenir au post</pre></a>
             </nav>
-            <form action='comment.php?action=modcomment&commentid=$comment_id'>
+            <form action='comment.php?action=modcomment&commentid=$comment_id' method='post'>
                 <textarea name='newcomment' class='comment' cols='40' rows='5'>
                 $old_comment
                 </textarea><br>
@@ -140,13 +164,14 @@ class Comment{
         $req_errors= array();
         $required=array("newcomment");
         $field_error="Ce champ ne peut pas être vide";
+        $comment_id= (abs(intval($_GET['commentid'])) === 0) ? 1 :$_GET['commentid'];
         $VER->prepare_data($data);
         $VER->verify_required($data, $req_errors, $required);
         if(empty($req_errors)){
             $this->modify_comment($connection, $comment_id, $data['newcomment']);
             return false;
         }
-        return simple_display_mod_page($field_error, $get, $session);
+        return simple_display_mod_page($connection,$field_error, $get, $session);
     }
 
 
