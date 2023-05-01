@@ -1,6 +1,27 @@
 <?php
 
 class Verification{
+
+    public function update_field_error_variables(&$data, &$required, &$error_msgs){
+        $req_errors=array();
+        $error_msgs=array();
+        foreach($required as $req){
+            $error_msgs[$req]="";
+        }
+        $this->verify_required($data,$req_errors, $required);
+        $this->error_msgs_post_fields($error_msgs, $req_errors);
+        foreach($error_msgs as $key => $error_msg){
+            $error_msgs[$key]=$this->prepare_error_msg($error_msgs,$key);
+        }
+        return !$req_errors;
+    }
+
+    public function error_msgs_post_fields(&$error_msgs ,&$req_errors){
+        foreach($req_errors as $error){
+            $error_msgs[$error]="Ce champ ne peut pas être vide";
+        }
+        return $error_msgs;
+    }
     
     public function prepare_error_msg($error_msgs,$type){ // prépare le message d'erreur pour l'affichage
          if(isset($error_msgs[$type])){

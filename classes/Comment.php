@@ -162,16 +162,17 @@ class Comment{
     public function display_mod_comment_page($connection, $get, $session, $data){
         $VER = new Verification();
         $req_errors= array();
+        $error_msgs=array();
         $required=array("newcomment");
-        $field_error="Ce champ ne peut pas être vide";
         $comment_id= (abs(intval($_GET['commentid'])) === 0) ? 1 :$_GET['commentid'];
         $VER->prepare_data($data);
-        $VER->verify_required($data, $req_errors, $required);
-        if(empty($req_errors)){
+        $all_good=$VER->update_field_error_variables($data,$required, $error_msgs);
+        $field_error=$error_msgs['newcomment'];
+        if($all_good){
             $this->modify_comment($connection, $comment_id, $data['newcomment']);
             return false;
         }
-        return simple_display_mod_page($connection,$field_error, $get, $session);
+        return $this->simple_display_mod_page($connection,$field_error, $get, $session);
     }
 
 

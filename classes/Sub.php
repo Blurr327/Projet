@@ -38,7 +38,56 @@ class Sub {
         return false;
     }
 
-    
+    public function follow_user($connection, $follower_id, $followed_id){
+        $DB=new DataBase();
+        $req="INSERT INTO follower_and_followed(follower_id, followed_id) VALUES ($follower_id, $followed_id)";
+        return $DB->query($connection, $req);  
+    }
+
+    public function unfollow_user($connection, $follower_id, $followed_id){
+        $DB=new DataBase();
+        $req="DELETE FROM follower_and_followed WHERE follower_id=$follower_id AND followed_id=$followed_id";
+        return $DB->query($connection, $req);
+    }
+
+    public function simple_follower_and_followed_display($connection, $get, $session){
+        $user_id_profile = (abs(intval($get['userid'])) === 0) ? 1 :abs(intval($get['userid']));
+        $current_user_id=$session['id'];
+
+        if($current_user_id !== $user_id_profile){ // un utilisateur ne peut pas s'abonner à lui même
+            $follow_status='S\'abonner';
+            if($this->does_follow($connection, $current_user_id,$user_id_profile)) $follow_status='Se désabonner'; //  mise à jour du status de l'abonnement
+            $follow_button="
+                <form action='profile.php?action=show&order=recent&userid=$user_id_profile' method='post'>
+                    <input type='submit' name='$follow_status' value=\"$follow_status\">
+                </form>
+            ";
+        }
+
+        $num_followers= $this->get_number_of_followers($connection, $user_id); // accès au nombre d'abonnées...
+        $num_followed= $this->get_number_of_followed($connection, $user_id);
+
+        return "
+            <div id='followblock'>
+                $follow_button
+                <p id='numfollowers'>$num_followers</p>
+                <p id='numfollowed'>$num_followed</p>
+            </div>
+        ";
+    }
+
+    public function display_follower_and_followed($connection, $get, $session, $data){
+        $profile_page_user_id=(abs(intval($get['userid'])) === 0 ) ? 1 :abs(intval($get['userid']));
+        $current_user_id=$session['id'];
+        if(!empty($data['S\'abonner'])){
+            $this->follow_user($connection, $current_user_id, $profile_page_user_id);
+        }
+        if(!empty($data['Se désabonner'])){
+            $this->unfollow_user($connection, $current_user_id, $profile_page_user_id);
+        }
+        return simple_follower_and_followed_display($connection, $get, $session);
+    }
+
 
 }
 ?>

@@ -160,15 +160,14 @@ class Post{
 
         $VER->prepare_data($data); // préparation des données
 
-        $VER->verify_required($data,$req_errors,$required); // vérification des champs pour les erreurs
-        $this->error_msgs_post_fields($error_msgs, $req_errors);
-        $title_error=$VER->prepare_error_msg($error_msgs, 'titlemod');
-        $post_error=$VER->prepare_error_msg($error_msgs, 'postmod');
-
-        if(empty($req_errors)){ // pas d'erreurs => modification du poste
-            $this->modify_post($connection, $data['postmod'], $data['titlemod'], $post_id);
+        $allgood=$VER->update_field_error_variables($data,$required, $error_msgs);
+        $title_error=$error_msgs['titlemod'];
+        $post_error=$error_msgs['postmod'];
+        if($allgood){ // pas d'erreurs => modification du poste
+            $this->modify_post($connection, $data['postmod'], $data['titlemod'], $post_id); 
             return false;
         }
+
         return $this->simple_display_post_mod($connection ,$get, $session,$title_error,$post_error); // réaffichage du poste avec les erreurs
     }
 
@@ -197,12 +196,6 @@ class Post{
         ";
     }
 
-    public function error_msgs_post_fields($error_msgs ,$req_errors){
-        foreach($req_errors as $error){
-            $error_msgs[$error]="le champ ne peut pas être vide";
-        }
-        return $error_msgs;
-    }
 
     public function display_post_creation($connection,$data, $session){
         $VER = new Verification(); // initialisation des variables
@@ -214,20 +207,18 @@ class Post{
 
         $VER->prepare_data($data); // préparation des données
 
-        $VER->verify_required($data,$req_errors,$required); // vérification des champs pour les erreurs
+        $allgood=$VER->update_field_error_variables($data,$required, $error_msgs); // préparer les erreurs
+        $title_error=$error_msgs['titlecreate'];
+        $post_error=$error_msgs['postcreate'];
 
-        $this->error_msgs_post_fields($error_msgs, $req_errors); // préparer les messages erreurs
-        $title_error=$VER->prepare_error_msg($error_msgs, 'titlecreate');
-        $post_error=$VER->prepare_error_msg($error_msgs, 'postcreate');
-
-        if(empty($req_errors)){ // pas d'erreurs => création du poste
+        if($allgood){ // pas d'erreurs => création du poste
             $this->insert_post($connection,$data['postcreate'] ,$session['id'],$data['titlecreate']);
             return false;
         }
         return $this->simple_display_post_creation($title_error,$post_error); // réaffichage de la page avec les erreurs
     }
 
-    public function simple_display_post_page($connection, $get, $session){ // affichage de la page quand la méthode de requête n'est pas post
+    public function simple_display_post_page($connection, $get, $session, $comment_field_error){ // affichage de la page quand la méthode de requête n'est pas post
         $COMMENT = new Comment(); // initialisation des variables
         $LIKE = new Like();
         $USER = new User();
@@ -288,6 +279,7 @@ class Post{
                     Commentaire...
                     </textarea>
                     <input type='submit' name='commentaire' value='Poster'><br>
+                    $comment_field_error
                 </form>
                 <div id='commentaires'>
                     $comments
@@ -308,9 +300,19 @@ class Post{
         $LIKE= new Like(); 
         $COMMENT= new Comment();
         $comments=array();
+        $req_errors=array();
+        $error_msgs=array();
+        $required=array("commenttext");
+
         $post_id=(abs(intval($get['postid'])) === 0) ? 1 : abs(intval($get['postid']));// valeur du paramétre est modifiable depuis le navigateur, donc il faut se rassurer du fait que c'est un nombre strictement postitive
+
         $connection = $DB->connect();
+
         $VER->prepare_data($data);
+
+        $VER->update_field_error_variables($data, $required, $error_msgs);
+        $comment_field_error = $error_msgs['commenttext'];
+        if(!empty($req_errors))
         if(!empty($data['like'])){
             $LIKE->like_post($connection, $session['id'], $post_id); // l'ajout du like à la base de donnée
         }
@@ -320,7 +322,8 @@ class Post{
         if(!empty($data['commentaire'])){
             $COMMENT->insert_comment($connection,$data['commenttext'],$post_id, $session['id']); // l'ajout du commentair à la base de donnée
         }
-        return $this->simple_display_post_page($connection,$get, $session);
+
+        return $this->simple_display_post_page($connection,$get, $session, $comment_field_error);
     }
 
     public function simple_display_timeline_posts($connection, $session, $get, $order, $timeline_or_user){
