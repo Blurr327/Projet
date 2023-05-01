@@ -54,15 +54,15 @@ class Post{
         return $DB->query($connection,$req);
     }
 
-    public function get_posts_for_users_timeline($connection,$session,$starting_point,$order){ // renvoie un tableau d'indices qui contient des tableaux associatifs contenant les postes (la date de création et l'auteur + l'id des postes et de l'auteur + le titre) du site crées par des utilisateurs suivi par l'utilisateur courant (classé par $ordre)
-
+    public function get_posts($connection,$user_id,$starting_point,$order,$timeline_or_user){ // renvoie un tableau d'indices qui contient des tableaux associatifs contenant les postes (la date de création et l'auteur + l'id des postes et de l'auteur + le titre) du site crées par des utilisateurs suivi par l'utilisateur courant (classé par $ordre)
+        
+        // l'option $timeline_or_user peut être soit : author_id (pour la page profile) soit : follower_id (pour le timeline)
         // $order est soit : likes soit : n'importe quoi (dans ce cas l'ordre est par le plus récent)
         $list_of_posts=array();
         $COMMENT = new Comment();
         $LIKE = new Like();
-        $user_id= $session['id'];
         $DB=new DataBase();
-        $req="SELECT posts.post_id AS posts_post_id, followed_id AS posts_author_id,posts.creation_date AS posts_creation_date,post_title, nickname FROM follower_and_followed, posts, users WHERE follower_id=$user_id AND followed_id=author_id AND followed_id=id ORDER BY posts.creation_date DESC LIMIT $starting_point, 14"; // on ne veut afficher que 14 postes sur la page (pour afficher les autres on va avoir une liste déroulante qui affiche le reste en fonction de $starting_point)
+        $req="SELECT posts.post_id AS posts_post_id, followed_id AS posts_author_id,posts.creation_date AS posts_creation_date,post_title, nickname FROM follower_and_followed, posts, users WHERE $timeline_or_user=$user_id AND followed_id=author_id AND followed_id=id ORDER BY posts.creation_date DESC LIMIT $starting_point, 14"; // on ne veut afficher que 14 postes sur la page (pour afficher les autres on va avoir une liste déroulante qui affiche le reste en fonction de $starting_point)
         $result=$DB->query($connection,$req);
         $rows= $result->fetch_all(MYSQLI_ASSOC);
         $rows_ordered_by_likes=array();
@@ -249,8 +249,9 @@ class Post{
         $creation_date= $this->fetch_post_accessories($connection, $post_id,'creation_date');
         $author_nickname=$this->fetch_author_nickname($connection,$post_id);
         $text = $this->fetch_post_accessories($connection,$post_id, 'post');
+        $num_comments= $COMMENT->get_num_comments($connection, $post_id);
 
-        $display_more=$show+5; // un paramètre de get controle combien de commentaires on peut voir
+        $display_more=($show+5 > $num_comments) ? $num_comments : $show+5; // un paramètre de get controle combien de commentaires on peut voir
         $display_less=($show-5 >= 0) ? $show-5 : 0;
         
         $privileges= $USER->privileges($connection, $session,$author_id); //  mise à jour des droits de l'utilisateur courant
@@ -322,12 +323,12 @@ class Post{
         return $this->simple_display_post_page($connection,$get, $session);
     }
 
-    public function simple_display_timeline_posts($connection, $session, $get, $order){
+    public function simple_display_timeline_posts($connection, $session, $get, $order, $timeline_or_user){
         $posts_display="";
         $show=(abs(intval($get['show'])) === 0) ? 1:abs(intval($get['show']));
         $starting_point=($show-1)*14; // page 1 (avec show=1) affiche les premiers 14 postes, page 2(avec show=2)affiche les postes numéro 15 justqu'à 28... ainsi de suite
         
-        $posts_array= $this->get_posts_for_users_timeline($connection, $session,$starting_point, $order);
+        $posts_array= $this->get_posts($connection, $session['id'],$starting_point, $order, $timeline_or_user);
         for($i=0;$i<count($posts_array);$i++){
             $posts_display .= $this->display_post_on_timeline($posts_array[$i]['post_title'], $posts_array[$i]['posts_post_id'],$posts_array[$i]['nickname'], $posts_array[$i]['posts_author_id'], $posts_array[$i]['num_likes'],$posts_array[$i]['num_comments'],$posts_array[$i]['posts_creation_date']);
         }
