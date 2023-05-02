@@ -25,20 +25,14 @@ class Comment{
         return mysqli_num_rows($result);
     }
 
-    public function delete_comment($connection,$comment_id, $session){ // supprime le commentaire
+    public function delete_comment($connection,$comment_id){ // supprime le commentaire
         $DB=new DataBase();
         $USER= new user();
         $PERM= new Permission();
         $author_info=$this->fetch_comment_author_info($connection, $comment_id);
-        if($session != 'deletepost'){ // si on supprime un post, on supprime tous les commentaires
-            $privileges=$USER->privileges($connection, $session, $author_info['author_id']);
-            if(!$privileges){
-                return false;
-            }
-        }
         $req="DELETE FROM comments WHERE comment_id=$comment_id";
         $DB->query($connection,$req);
-        return true;
+        return 'redirect';
     }
 
     public function modify_comment($connection,$comment_id,$new_text){ // modifie le commentaire
@@ -51,7 +45,7 @@ class Comment{
         $DB = new DataBase();
         $USER= new User();
         $limitornot=($num_shown=== 'all') ? "" : "LIMIT 0,$num_shown";
-        $req="SELECT comment, author_id, comment_id, creation_date, nickname FROM comments, users WHERE comments.post_id=$post_id AND id=author_id ORDER BY creation_date $limitornot"; // numshown = le nombre de commentaire affiché
+        $req="SELECT comment, author_id, comment_id, creation_date, nickname FROM comments, users WHERE comments.post_id=$post_id AND id=author_id ORDER BY creation_date DESC $limitornot"; // numshown = le nombre de commentaire affiché
         $result=$DB->query($connection,$req);
         $rows=$result->fetch_all(MYSQLI_ASSOC);
         return $rows;
@@ -85,81 +79,10 @@ class Comment{
         return $rows[0];
     }
 
-    public function simple_display_comment_page($connection, $get, $session){
-        $USER= new User();
-        $comment_id= (abs(intval($get['commentid'])) ===0) ? 1 :abs(intval($get['commentid'])); // valeur du paramétre est modifiable depuis le navigateur, donc il faut se rassurer du fait que c'est un nombre strictement postitive
-        $modify_comment="";
-        $delete_comment="";
-
-        $author_info= $this->fetch_comment_author_info($connection, $comment_id);
-        $author_id=$author_info['id'];
-        $author_nickname=$author_info['nickname'];
-        $authors_comment=$author_info['comment'];
-        $post_id=$author_info['post_id'];
-        $privileges= $USER->privileges($connection, $session,$author_id); //  mise à jour des droits de l'utilisateur courant
-
-        if($privileges){
-            $modify_comment="<a class='buttons' href='comment.php?action=modcomment&commentid=$comment_id'>Modifier</a>";
-            $delete_comment="<a class='buttons' href='comment.php?action=deletecomment&commentid=$comment_id' >Supprimer</a>";
-        }
-        return "
-            <!DOCTYPE html>
-            <html lang='fr'>
-                <head>
-                    <title>Blackboard</title>
-                    <meta charset='utf8'>
-                </head>
-                <body>
-                    <nav>
-                        <a href='post.php?action=show&postid=$post_id&show=1'><pre><< Revenir au post</pre></a>
-                    </nav>
-                    <a id='commentauthor' href='profile.php?action=show&userid=$author_id&show=1'>$author_nickname</a>
-                    <div class='comment'>
-                        <p>$authors_comment</p>
-                    </div><br>
-                    $modify_comment
-                    $delete_comment
-                </body>
-            </html>
-        ";
-    }
-    
     
 
-    public function simple_display_mod_page($connection ,$field_error, $get, $session){
-        $USER = new User();
-        $PERM = new Permission();
-        $comment_id= (abs(intval($get['commentid'])) === 0) ? 1 : abs(intval($get['commentid']));
-        $author_info= $this->fetch_comment_author_info($connection, $comment_id);
-        $post_id= $author_info['post_id'];
-        if(!$USER->privileges($connection, $session, $author_info['author_id'])){
-            return $PERM->forbidden_page();
-        }   
-        $old_comment=$author_info['comment'];
-        return "
-        <!DOCTYPE html>
-        <html lang='fr'>
-        <head>
-            <meta charset='UTF-8'>
-            <title>Blackboard</title>
-        </head>
-        <body>
-            <nav>
-            <a href='post.php?action=show&postid=$post_id&show=1'><pre><< Revenir au post</pre></a>
-            </nav>
-            <form action='comment.php?action=modcomment&commentid=$comment_id' method='post'>
-                <textarea name='newcomment' class='comment' cols='40' rows='5'>
-                $old_comment
-                </textarea><br>
-                $field_error
-                <input type='submit' name='modcomment' value='Modifier'>
-            </form>
-        </body>
-        </html>
-        ";
-    }
 
-    public function display_mod_comment_page($connection, $get, $session, $data){
+    public function update_mod_comment_page($connection, $get, $session, $data){
         $VER = new Verification();
         $req_errors= array();
         $error_msgs=array();
@@ -172,9 +95,16 @@ class Comment{
             $this->modify_comment($connection, $comment_id, $data['newcomment']);
             return false;
         }
-        return $this->simple_display_mod_page($connection,$field_error, $get, $session);
+        return $field_error;
     }
 
 
+    public function undo_comments_of_user($connection, $user_id){
+        $DB= new DataBase();
+        $req= "DELETE FROM comments WHERE author_id=$user_id";
+        return $DB->query($connection, $req);
+    }
+
+    
 } 
 ?>

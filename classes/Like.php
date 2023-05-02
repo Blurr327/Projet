@@ -34,5 +34,19 @@ class Like{
         return $DB->query($connection, $req);
     }
 
+    public function undo_likes_of_user($connection, $user_id){
+        $DB= new DataBase();
+        $req="DELETE FROM likes WHERE liker_id=$user_id";
+        return $DB->query($connection, $req);
+    }
+
+    public function update_like_on_posts($connection, $data){
+        if(!empty($data['like'])){
+            $LIKE->like_post($connection, $session['id'], $post_id); // l'ajout du like à la base de donnée
+        }
+        if(!empty($data['unlike'])){
+            $LIKE->unlike_post($connection, $session['id'], $post_id); // la suppression du like de la base de donnée
+        }
+    }
 }
 ?>

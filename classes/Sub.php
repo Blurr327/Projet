@@ -89,5 +89,12 @@ class Sub {
     }
 
 
+    public function undo_followers_and_followed_of($connection, $user_id){
+        $DB= new DataBase();
+        $req = "DELETE FROM follower_and_followed WHERE followed_id=$user_id OR follower_id=$user_id";
+        return $DB->query($connection, $req);
+    }
+
+
 }
 ?>

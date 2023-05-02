@@ -1,60 +1,53 @@
 <?php
-session_start();
+session_start(['cookie_lifetime' => 43200,'cookie_secure' => true,'cookie_httponly' => true]);
 require_once("classes/DataBase.php");
 require_once("classes/Like.php");
 require_once("classes/Comment.php");
 require_once("classes/Post.php");
+require_once("classes/ControlPost.php");
+require_once("classes/ViewPost.php");
 require_once("classes/Verification.php");
 require_once("classes/User.php");
-require_once("classes/Permission.php");
+require_once("classes/ControlPermission.php");
+require_once("classes/ViewPermission.php");
 $DB = new DataBase();
 $POST= new Post();
-$PERM= new Permission();
+$PERM= new ControlPermission();
 $COMMENT= new Comment();
 $LIKE = new Like();
+$CONTROLPOST= new ControlPost();
+$USER = new User();
 $connection= $DB->connect();
+if(!isset($_SESSION['id'])){
+    echo $PERM->forbidden_page();
+    exit;
+}
 $action = (isset($_GET['action'])) ? $_GET['action'] :'show';
 switch($action){
     case 'modpost':
-        if($_SERVER['REQUEST_METHOD']==='POST'){
             $post_id=(abs(intval($_GET['postid'])) === 0) ? 1 : abs(intval($_GET['postid']));
-            $problem= $POST->display_post_modification_page($connection, $_POST, $_GET, $_SESSION);
-            if(!$problem) header("Location: post.php?action=show&postid=$post_id&show=5");
-            echo $problem;
-        }
-        else {
-            echo $POST->simple_display_post_mod($connection,$_GET, $_SESSION,"","");
-        }
+            $forbidden=$PERM->control_perm_post($connection, $post_id, $_SESSION);
+            if($forbidden) {
+                echo $forbidden;exit;
+            }
+            $result=$CONTROLPOST->control_post_mod($connection, $_GET, $_SESSION, $_POST,$_SERVER);
+            if($result==='redirect') header("Location: post.php?show=5&action=show&postid=$post_id");
+            echo $result;
         break;
     case 'createpost':
-        if($_SERVER['REQUEST_METHOD']==='POST'){
-            $problem= $POST->display_post_creation($connection, $_POST, $_SESSION);
-            if(!$problem) header("Location: timeline.php?show=1&order=recent");
-            echo $problem;
-        }
-        else {
-            echo $POST->simple_display_post_creation("","");
-        }
+        echo $CONTROLPOST->control_post_creation($connection, $_POST, $_SESSION, $_SERVER);
         break;
     case 'show' :
-        if($_SERVER['REQUEST_METHOD']==='POST'){
-           
-            echo $POST->display_post_page($connection, $_GET, $_SESSION, $_POST);
-          
-        }
-        else {
-            echo $POST->simple_display_post_page($connection, $_GET, $_SESSION);
-        }
+        echo $CONTROLPOST->control_post_page($connection, $_GET, $_SESSION, $_POST, $_SERVER);
         break;
     case 'deletepost':
         $post_id=(abs(intval($_GET['postid'])) === 0) ? 1 : abs(intval($_GET['postid']));
-
-        $hasright=$POST->delete_post($connection, $post_id, $_SESSION);
-        if(!$hasright){
-            echo $PERM->forbidden_page();
-            break;
+        $forbidden=$PERM->control_perm_post($connection, $post_id, $_SESSION);
+        if($forbidden) {
+            echo $forbidden;exit;
         }
-        header("Location: timeline.php?show=1&order=recent");
+        $result=$CONTROLPOST->control_delete_post($connection, $post_id);
+        if($result==='redirect') header("Location: timeline.php?show=1&order=recent");
         break;
 }
 ?>
