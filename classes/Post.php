@@ -24,10 +24,12 @@ class Post{
         return $DB->query($connection,$req);
     }
 
-    public function get_number_of_posts($connection, $session){
+    public function get_number_of_posts($connection, $session, $timeline_or_user, $user_id_profile){
         $DB = new DataBase();
         $user_id= $session['id'];
-        $req="SELECT * FROM posts, follower_and_followed WHERE follower_id=$user_id AND followed_id=author_id";
+        $req_user= "SELECT * FROM posts WHERE author_id=$user_id_profile";
+        $req_timeline="SELECT * FROM posts, follower_and_followed WHERE follower_id=$user_id AND followed_id=author_id";
+        $req = ($timeline_or_user ==='follower_id') ? $req_timeline : $req_user;
         $result = $DB->query($connection, $req);
         return mysqli_num_rows($result);
     }
@@ -49,13 +51,17 @@ class Post{
         return $DB->query($connection,$req);
     }
 
-    public function get_posts($connection,$user_id,$order,$timeline_or_user){ 
+    public function get_posts($connection,$user_id,$order, $timeline_or_user, $user_id_profile){ 
         
         $list_of_posts=array();
         $COMMENT = new Comment();
         $LIKE = new Like();
         $DB=new DataBase();
-        $req="SELECT posts.post_id AS posts_post_id, followed_id AS posts_author_id,posts.creation_date AS posts_creation_date,post_title, nickname FROM follower_and_followed, posts, users WHERE $timeline_or_user=$user_id AND followed_id=author_id AND followed_id=id ORDER BY posts.creation_date DESC"; 
+        $req_user="SELECT posts.post_id AS posts_post_id, author_id AS posts_author_id, posts.creation_date AS posts_creation_date, post_title, nickname FROM posts, users WHERE posts.author_id=$user_id_profile AND posts.author_id=id ORDER BY posts.creation_date DESC";
+
+        $req_timeline="SELECT posts.post_id AS posts_post_id, followed_id AS posts_author_id,posts.creation_date AS posts_creation_date,post_title, nickname FROM follower_and_followed, posts, users WHERE follower_id=$user_id AND followed_id=author_id AND followed_id=id ORDER BY posts.creation_date DESC"; 
+
+        $req =($timeline_or_user === 'follower_id') ? $req_timeline : $req_user;
         $result=$DB->query($connection,$req);
         $rows= $result->fetch_all(MYSQLI_ASSOC);
         foreach($rows as $key =>$post_array){
@@ -175,7 +181,6 @@ class Post{
             $comment_field_error = $error_msgs['commenttext'];
 
             if(!empty($comment_field_error)){
-                echo $data['commenttext']; 
              $COMMENT->insert_comment($connection,$data['commenttext'],$post_id, $session['id']); // l'ajout du commentair à la base de donnée
             }
             return $comment_field_error;

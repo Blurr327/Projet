@@ -15,7 +15,6 @@ CREATE TABLE IF NOT EXISTS `BaseBlackboard`.`users` (
   `nickname` VARCHAR(45) NOT NULL,
   `password` VARCHAR(150) NOT NULL,
   `admin` TINYINT NULL DEFAULT 0,
-  `blackboard` TEXT NOT NULL DEFAULT 'Eureka',
   `signup_date` DATETIME NOT NULL,
   PRIMARY KEY (`id`));
 
@@ -75,4 +74,4 @@ CREATE TABLE IF NOT EXISTS `BaseBlackboard`.`likes` (
     FOREIGN KEY (`liked_id`)
     REFERENCES `BaseBlackboard`.`posts` (`post_id`));
 
-INSERT INTO users(firstname,lastname,nickname,`password`,signup_date, `admin`) VALUES ('superuser','root','zayn','202cb962ac59075b964b07152d234b70',NOW(),1);
+INSERT INTO users(firstname,lastname,nickname,`password`,signup_date, `admin`) VALUES ('superuser','root','zayn','$2y$12$XyOBswFq/XZGFHbEY.my6OIyM4Qa5JGOTczkhf5PYXngVg1N1w.cK',NOW(),1);

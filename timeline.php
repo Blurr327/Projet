@@ -8,16 +8,20 @@ require_once("classes/ControlPost.php");
 require_once("classes/ViewPost.php");
 require_once("classes/Verification.php");
 require_once("classes/User.php");
-require_once("classes/Permission.php");
+require_once("classes/ViewPermission.php");
 require_once("classes/SeriesOfPosts.php");
 require_once("classes/ViewSeriesOfPosts.php");
 require_once("classes/ControlSeriesOfPosts.php");
+require_once("classes/Sub.php");
+require_once("classes/ControlSub.php");
+require_once("classes/ViewSub.php");
+
 $DB= new DataBase();
 $SER= new SeriesOfPosts();
-$PERM = new Permission();
+$VIEWPERM = new ViewPermission();
 $VIEWSER = new ViewSeriesOfPosts();
 $CONTROLSER = new ControlSeriesOfPosts();
 $connection = $DB->connect();
-if(!isset($_SESSION['id'])) echo $PERM->forbidden_page();
-else echo $CONTROLSER->control_series_of_posts($connection, $_GET, $_SESSION, 'follower_id');
+if(!isset($_SESSION['id'])) echo $VIEWPERM->forbidden_page();
+else echo $CONTROLSER->control_series_of_posts($connection, $_GET, $_SESSION, 'follower_id', 'timeline.php', $_SERVER, $_POST);
 ?>

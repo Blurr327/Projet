@@ -79,9 +79,6 @@ class Comment{
         return $rows[0];
     }
 
-    
-
-
     public function update_mod_comment_page($connection, $get, $session, $data){
         $VER = new Verification();
         $req_errors= array();

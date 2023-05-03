@@ -10,13 +10,13 @@ class User{
 
     public function fetch_user_byid($connection,$user_id){ // renvoie les lignes de l'utilisateur concerné
         $DB= new DataBase();
-        $req= 'SELECT * FROM users WHERE id=\'' . mysqli_real_escape_string($connection,$id) . '\'';
+        $req= 'SELECT * FROM users WHERE id=\'' . mysqli_real_escape_string($connection,$user_id) . '\'';
         return $DB->query($connection,$req);
     }
 
     public function insert_user($connection,$firstname,$lastname,$nickname,$password){ // ajoute l'utilisateur à la base de donnée
         $DB= new DataBase();
-        $req='INSERT INTO users(firstname, lastname, nickname, password, signup_date) VALUES (\''. mysqli_real_escape_string($connection,$firstname) . '\',\''. mysqli_real_escape_string($connection,$lastname)  . '\',\'' . mysqli_real_escape_string($connection,$nickname) . '\',\''. md5(mysqli_real_escape_string($connection,$password)) .'\',\''. date("Y-m-d h:i:s") .'\')';
+        $req='INSERT INTO users(firstname, lastname, nickname, password, signup_date) VALUES (\''. mysqli_real_escape_string($connection,$firstname) . '\',\''. mysqli_real_escape_string($connection,$lastname)  . '\',\'' . mysqli_real_escape_string($connection,$nickname) . '\',\''. password_hash(mysqli_real_escape_string($connection,$password), PASSWORD_BCRYPT, ['cost' => 12]) .'\',\''. date("Y-m-d h:i:s") .'\')'; // on utilise l'algorithme blowfish pour hasher le mot de passe
         return $DB->query($connection,$req);
     }
     
@@ -54,71 +54,40 @@ class User{
         return $this->is_admin($session,$connection) || $associated_user_id===$session['id'];
     }
 
-    public function delete_user($connection, $session, $user_id){
+    
+    public function get_list_of_users($connection, $num_shown){
+        $DB= new DataBase();
+        $req= "SELECT nickname, id FROM users LIMIT 0,$num_shown";
+        $result= $DB->query($connection, $req);
+        $rows=$result->fetch_all(MYSQLI_ASSOC);
+        return $rows;
+    }
 
-        $COMMENT= new Comment();
-        $LIKE= new Like();
-        $SUB = new Sub();
-        $privileges = $this->privileges($connection, $session, $user_id);
-        if(!$privileges){
-            return false;
+    public function search_for_user($connection, $nickname){
+        $DB= new DataBase();
+        $req="SELECT id FROM users WHERE nickname='$nickname'";
+        $result= $DB->query($connection, $req);
+        if(mysqli_num_rows($result) === 0) return false;
+        $rows=$result->fetch_all(MYSQLI_ASSOC);
+        return $rows;
+    }
+
+    public function get_num_users($connection){
+        $DB= new DataBase();
+        $req="SELECT * FROM users";
+        $result=$DB->query($connection, $req);
+        return mysqli_num_rows($result);
+    }
+
+    public function update_list_page($connection, $data){
+        $DB = new DataBase();
+        if(!empty($data['searchfield'])){
+            $result= $this->search_for_user($connection, $data['searchfield']);
+            return $result;
         }
-        $COMMENT->delete_comments_of_user($connection, $user_id);
-        $LIKE->undo_likes_of_user($connection, $user_id);
-        $SUB->undo_followers_and_followed($connection, $user_id);
-        $req="DELETE FROM users WHERE id=$user_id";
-        $DB->query($connection, $req);
-        return true;
     }
 
-    public function simple_display_mod_user($connection, $get, $session, $firstname_error, $lastname_error, $nickname_error, $incorrect_password, $password_format_error){
-        $VER= new Verification();
-        $user_id= $get['userid'];
-        $user_info= $this->fetch_user_byid($connection, $user_id);
-        $line = mysqli_fetch_assoc($user_info);
-        $old_firstname=$line['firstname'];
-        $old_nickname=$line['nickname'];
-        $old_lastname=$line['lastname'];
-        $privileges = $this->privileges($connection, $session, $user_id);
-        if(!$privileges){
-            return false;
-        }
-        return "
-            <!DOCTYPE html>
-            <html lang='fr'>
-            <head>
-                <meta charset='UTF-8'>
-                <title>Document</title>
-            </head>
-            <body>
-                <form action='profile.php?userid=$user_id&action=moduser' method='post'>
-                    <label for='oldfirstname'>Prénom : </label>
-                    <input type='text' name='prenom' value='$old_firstname' id='oldfirstname'><br>
-                    $firstname_error
-                    <label for='oldlastname'>Nom : </label>
-                    <input type='text' name='nom'  value='$old_lastname'id='oldlastname'><br>
-                    $lastname_error
-                    <label for='pseudo'>Pseudo</label>
-                    <input type='text' name='pseudo' value='$old_nickname'><br>
-                    $nickname_error
-                    <label for='oldpassword'>Saisissez votre ancien mot de passe : </label>
-                    <input type='password' name='password2' id='oldpassword' placeholder='password'>
-                    $incorrect_password
-                    <label for='newpassword'>Saisissez votre nouveau mot de passe : </label>
-                    <input type='password' name='password' id='newpassword' placeholder='password'>
-                    $password_format_error
-                    <input type='submit' name='moduser' value='Modifier'>
-                </form>
-            </body>
-            </html>
-        ";
-
-    }
-
-    public function display_mod_page($connection, $get, $session, &$data){
-        $REG = new Register();
-        
-    }
+   
 
 }
 

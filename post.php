@@ -13,13 +13,14 @@ require_once("classes/ViewPermission.php");
 $DB = new DataBase();
 $POST= new Post();
 $PERM= new ControlPermission();
+$VIEWPERM= new ViewPermission();
 $COMMENT= new Comment();
 $LIKE = new Like();
 $CONTROLPOST= new ControlPost();
 $USER = new User();
 $connection= $DB->connect();
 if(!isset($_SESSION['id'])){
-    echo $PERM->forbidden_page();
+    echo $VIEWPERM->forbidden_page();
     exit;
 }
 $action = (isset($_GET['action'])) ? $_GET['action'] :'show';

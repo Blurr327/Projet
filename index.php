@@ -23,7 +23,7 @@
         switch($action){
             case 'login':
                   $problem=$CONTROLLOG->control_login_page($_POST,$_SESSION, $_SERVER);
-                  if(!$problem) header("Location: timeline.php?show=1&order=recent");
+                  if(!$problem) header("Location: timeline.php?show=1&order=likes");
                   echo $problem;
             break;
             case 'register': 

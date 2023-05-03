@@ -73,7 +73,7 @@ class Verification{
     
     public function verify_password_validity($password,$result_of_fetch){ // vérifie la validité du mot de passe 
         while($line=mysqli_fetch_assoc($result_of_fetch)){
-            if($line['password'] === md5($password)) return true;
+            if(password_verify($password,$line['password'])) return true;
         }
         return false;
     }
@@ -126,6 +126,8 @@ class Verification{
         }
     
     }
+
+
 
     
 }

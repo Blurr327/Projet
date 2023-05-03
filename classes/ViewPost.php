@@ -1,6 +1,6 @@
 <?php class ViewPost{
 
-    public function display_post_page($post_title, $creation_date, $text, $author_id, $author_nickname, $modify_post_button, $delete_post_button, $post_id, $show, $like_status, $comment_field_error,$comments,$display_more, $display_less){
+    public function display_post_page($post_title, $creation_date, $text, $author_id, $author_nickname, $modify_post_button, $delete_post_button, $post_id, $show, $like_status, $comment_field_error,$comments,$display_more, $display_less, $order){
             return "
             <!DOCTYPE html>
             <html lang='fr'>
@@ -11,7 +11,7 @@
                 </head>    
                 <body>
                     <nav>
-                    <a href='timeline.php?show=1&order=recent'><pre><< Revenir au fil d'actualité</pre></a>
+                    <a href='timeline.php?show=1&order=$order'><pre><< Revenir au fil d'actualité</pre></a>
                     </nav>
                 
                     <header>$post_title</header>
@@ -93,12 +93,12 @@
         public function display_post_on_timeline($post_title,$post_id, $author_nickname,$author_id,$num_likes, $num_comments, $creation_date){ // affiche un post (son apparence sur le timeline)
             return "
              <div class='post'>
-              <a class='author' href='profile.php?action=show&userid=$author_id&show=1'>$author_nickname</a>
+              <a class='author' href='profile.php?action=show&userid=$author_id&show=1'>$author_nickname</a><br>
               <span class='thumbnail'>
-                <a href='post.php?action=show&postid=$post_id&show=5'><h3>$post_title</h3></a>
+              <h3><a id='posttitle' href='post.php?action=show&postid=$post_id&show=5'>$post_title</a></h3>
                 <p id='numlikes'>Likes : $num_likes</p>
                 <p id='numcomments'>Commentaires : $num_comments</p>
-                <p id='creationdate'>Crée le : $creation_date</p>
+                <p id='creationdate'>Créé le : $creation_date</p>
               </span>
             </div>
             ";

@@ -4,29 +4,41 @@ require_once("classes/DataBase.php");
 require_once("classes/Like.php");
 require_once("classes/Comment.php");
 require_once("classes/Post.php");
+require_once("classes/ControlPost.php");
+require_once("classes/ViewPost.php");
 require_once("classes/Verification.php");
 require_once("classes/User.php");
+require_once("classes/ControlUser.php");
+require_once("classes/ViewUser.php");
 require_once("classes/Sub.php");
-require_once("classes/Permission.php");
+require_once("classes/ViewPermission.php");
 require_once("classes/SeriesOfPosts.php");
+require_once("classes/ViewSeriesOfPosts.php");
+require_once("classes/ControlSeriesOfPosts.php");
+require_once("classes/Sub.php");
+require_once("classes/ControlSub.php");
+require_once("classes/ViewSub.php");
 $DB= new DataBase();
 $connection = $DB->connect();
 $USER = new User();
-$PERM = new Permission();
-if(!isset($_SESSION['id'])){
-echo $PERM->forbidden_page();
-exit;
-}
-$action=$_GET['action'];
-switch($action){
-    case 'deleteuser':
-        $user_id=$_GET['userid'];
-        $current_user_id= $_SESSION['id'];
-        $hasright = $USER->delete_user($connection, $_SESSION, $user_id);
-        if(!$hasright) echo $PERM->forbidden_page();
-        if($user_id === $current_user_id) header("Location: index.php?action=default");
-        else header("Location: timeline.php?show=1&order=recent");  
-    case 'moduser':
 
+$DB= new DataBase();
+$SER= new SeriesOfPosts();
+$VIEWPERM = new ViewPermission();
+$VIEWSER = new ViewSeriesOfPosts();
+$CONTROLSER = new ControlSeriesOfPosts();
+$CONTROLUSER= new ControlUser();
+$connection = $DB->connect();
+$action=(isset($_GET['action'])) ? $_GET['action'] :'show';
+if(!isset($_SESSION['id'])) echo $VIEWPERM->forbidden_page();
+else{ 
+    switch($action){
+        case 'show':
+            echo $CONTROLSER->control_series_of_posts($connection, $_GET, $_SESSION, 'author_id', 'profile.php', $_SERVER, $_POST);
+            break;
+        case 'search':
+            echo $CONTROLUSER->control_search_page($connection, $_GET, $_POST, $_SERVER);
+            break;
+    }
 }
 ?>
