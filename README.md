@@ -1,6 +1,6 @@
 # Projet IO2
 Ce projet a pour but le partage de l'expérience mathématique. Les utilisateurs peuvent publier du contenu concernant les mathématiques (expliquer comment on jugule les erreurs d'inattention, comment s'améliorer, partager des stratégies et des idées générales d'utilités variées et vaste... ). 
-Fonctionnalités du dite :
+Fonctionnalités du site :
 - inscription/Connexion.
 - Publications.
 - Likes et commentaires.
