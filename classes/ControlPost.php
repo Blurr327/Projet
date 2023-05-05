@@ -3,6 +3,7 @@
 
 public function control_post_page($connection, $get, $session, $data,$server){ // affichage de la page quand la méthode de requête n'est pas post
     $COMMENT = new Comment(); // initialisation des variables
+    $VIEWCOMMENT= new ViewComment();
     $LIKE = new Like();
     $USER = new User();
     $POST = new Post();
@@ -20,7 +21,7 @@ public function control_post_page($connection, $get, $session, $data,$server){ /
     $show=abs(intval($get['show']))  ; // valeur du paramétre est modifiable depuis le navigateur, donc il faut se rassurer du fait que c'est un nombre strictement postitive
     $post_id=(abs(intval($get['postid'])) === 0) ? 1 : abs(intval($get['postid']));// valeur du paramétre est modifiable depuis le navigateur, donc il faut se rassurer du fait que c'est un nombre strictement postitive
 
-    $comments = $COMMENT->display_comments_for_post($connection, $post_id, $show); // pour l'affichage des commentaireqs
+    $comments = $VIEWCOMMENT->display_comments_for_post($connection, $post_id, $show); // pour l'affichage des commentaireqs
 
     if($LIKE->does_like($connection, $session['id'], $post_id)) $like_status='unlike'; // mise à jour du bouton like/unlike 
 
@@ -40,8 +41,8 @@ public function control_post_page($connection, $get, $session, $data,$server){ /
     $privileges= $USER->privileges($connection, $session,$author_id); //  mise à jour des droits de l'utilisateur courant
 
     if($privileges){ // l'ajout des boutons de modification et de suppression pour les utilisateurs qui ont le droit à ça
-        $modify_post_button="<a class='buttons' href='post.php?action=modpost&postid=$post_id'>Modifier</a>";
-        $delete_post_button="<a class='buttons' href='post.php?action=deletepost&postid=$post_id'>Supprimer</a>";
+        $modify_post_button="<a id='modify' href='post.php?action=modpost&postid=$post_id'>Modifier</a>";
+        $delete_post_button="<a id='delete' href='post.php?action=deletepost&postid=$post_id'>Supprimer</a>";
     }
 
     return $VIEWPOST->display_post_page($post_title, $creation_date, $text, $author_id, $author_nickname, $modify_post_button, $delete_post_button, $post_id, $show, $like_status, $comment_field_error,$comments,$display_more, $display_less, $order);
@@ -66,21 +67,19 @@ public function control_post_page($connection, $get, $session, $data,$server){ /
         return $VIEWPOST->display_post_creation($errors[0],$errors[1]); // 0, title error et 1 post error
     }
 
-    public function control_timeline_or_user_posts($connection, $session, $get, $order, $timeline_or_user){
+    public function control_posts($posts_array, $order, $show, $get){
         $POST= new Post();
-        $VIEWPOST=new ViewPost();
-        $posts_display="";
-        $show=(abs(intval($get['show'])) === 0) ? 1:abs(intval($get['show']));
-        $user_id_profile=(isset($get['userid'])) ? abs(intval($get['userid'])) : 1;
-        $starting_point=($show-1)*14; // page 1 (avec show=1) affiche les premiers 14 postes, page 2(avec show=2)affiche les postes numéro 15 justqu'à 28... ainsi de suite
-        $num_shown=($starting_point+14> $POST->get_number_of_posts($connection,$session, $timeline_or_user, $user_id_profile)) ?$POST->get_number_of_posts($connection,$session, $timeline_or_user, $user_id_profile):$starting_point+14;
-        $posts_array= $POST->get_posts($connection, $session['id'], $order, $timeline_or_user,$user_id_profile);
-        for($i=$starting_point;$i<$num_shown;$i++){
-            $posts_display .= $VIEWPOST->display_post_on_timeline($posts_array[$i]['post_title'], $posts_array[$i]['posts_post_id'],$posts_array[$i]['nickname'], $posts_array[$i]['posts_author_id'], $posts_array[$i]['num_likes'],$posts_array[$i]['num_comments'],$posts_array[$i]['posts_creation_date']);
-        }
+        $VIEWSER= new ViewSeriesOfPosts();
+        $POSTSER= new SeriesOfPosts();
         
-        return $posts_display;
+        $starting_point=($show-1)*14;// page 1 (avec show=1) affiche les premiers 14 postes, page 2(avec show=2)affiche les postes numéro 15 justqu'à 28... ainsi de suit
+        
+        $num_shown=$POSTSER->get_num_shown($posts_array, $starting_point);
+
+        return $VIEWSER->display_series($posts_array, $num_shown, $starting_point);
+
     }
+ 
 
     public function control_post_mod($connection,$get,$session, $data,$server){ // pour la page de modification du poste
         $POST = new Post();

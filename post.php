@@ -8,6 +8,7 @@ require_once("classes/ControlPost.php");
 require_once("classes/ViewPost.php");
 require_once("classes/Verification.php");
 require_once("classes/User.php");
+require_once("classes/ViewComment.php");
 require_once("classes/ControlPermission.php");
 require_once("classes/ViewPermission.php");
 $DB = new DataBase();

@@ -1,24 +1,27 @@
 * {
     background-color: #34433c;
 }
-body,h3,input[type="submit"],input[type="reset"]  {
+body:not(h1),h3,input[type="submit"],input[type="reset"]  {
     text-align:center;
     color:white;
     font-family:'Times New Roman';
     font-weight:lighter;
 }
 h1 {
+    position: relative;
     display:inline-block;
     margin-top:13px;
     font-weight:lighter;
     font-size:280%;
-    margin-bottom:50px;
+    margin-bottom:0px;
+    right:600px;
+    text-decoration: underline solid white;
 }
 #order{
     position: relative;
     box-sizing: border-box;
     display:inline-block;
-    margin:30px;
+    margin:10px;
     border:1px solid white;
     padding:5px;
     border-radius:10px;
@@ -27,18 +30,18 @@ h1 {
 #likes{
     bottom:10px;
 }
-a {
+a:not(#homebutton, .author, #homeh) {
     color:white;
     font-weight:lighter;
     font-family:'Times New Roman';
     text-decoration: none;
 }
-a {
+a:not(#posttitle, #homebutton, .author, #homeh) {
     
     display:inline;
     align-items: center;
     justify-content: center;
-    color:white;
+    
     box-sizing:border-box;
     background-color:#34433c;
     border:2px solid #34433c;
@@ -50,24 +53,15 @@ a {
     padding:5px;
     transition:all .3s ease-out;
 }
-
-a:hover{
-    display:inline;
-    align-items: center;
-    justify-content: center;
+#homebutton{
     color:white;
-    box-sizing:border-box;
-    background-color:#34433c;
-    border:2px solid #34433c;
-    border-radius:10px;
-    font-size:110%;
-    margin:5px;
-    height:50%;
-    background-color:white;
-    color:#34433c;
-    padding:5px;
-    transition:all .3s ease-in;
+    font-weight:lighter;
+    font-family:'Times New Roman';
+    text-decoration: underline solid white;
+
 }
+
+
 nav{
 position: fixed;
 display:flex;
@@ -75,19 +69,29 @@ align-items: center;
 justify-content: center;
 right:10px;
 padding:5px 10px 10px 10px;
-border: 1px solid white;
 
-border-radius:10px;
+
+
 }
 #myprofile{
     position: relative;
     
 }
+#posttitle p{
+
+    position:relative;
+    width:300px;
+    bottom:8px;
+    right:80px;
+}
+
 #posts {
     border: 1px solid white;
     border-radius:10px;
     display:inline-block;
-    padding:50px;
+    padding:5px;
+
+    width:350px;
     color:#34433c;
     background-color: white;
 }
@@ -96,8 +100,13 @@ border-radius:10px;
     background-color:white;
     color:#34433c;
 }
+#posts p{
+    font-size:70%;
+    margin:2px;
+}
 
 input[type="submit"]{
+    
     transition:all .3s ease-out;
     background-color: white;
       border-radius: 10px;
@@ -113,36 +122,44 @@ input[type="submit"]:hover{
     transition:all .3s ease-in;
 }
 select{
+    position:relative;
     color: white;
     border-radius:5px;
     border: 1px solid white;
     opacity:.5;
+    left:18px;
 }
 #pagenum{
     opacity:.5;
 }
 #appliquer{
+    display:inline-block;
     font-size:75%;
     opacity:.75;
 }
-div{
+div:not(.post){
     display: flex;
     justify-content: center;
     align-items: center;
 }
-div .post{
+.post{
     display:block;
+    box-sizing: border-box;
     border:1px solid #34433c;
     border-radius: 10px;
-    padding:30px;
+    padding:25px;
+    padding-right:100px;
+    padding-left:100px;
+    height:auto;
+    
 }
-div+div{
-    margin-top:30px;
+.post+.post{
+    margin-top:15px;
 
 }
 .post{
     
-    display:inline-block;
+    display:block;
     color:#34433c;
     background-color: white;
 }
@@ -159,6 +176,69 @@ input[type='radio']:checked{
 }
 #profileinfo h2,#profileinfo p{
     display:inline;
+    position:relative;
+    bottom:40px;
+}
+#followblock{
+    display:block;
+    margin-bottom:0px;
+}
+#followers, #followed{
+    display: inline;
+    font-weight: bold;
+    text-decoration: underline solid white;
+    padding: 7px;
+    margin:5px;
+}
+#followbutton{
+    margin-top: 15px;
+}
+.author{
+    display: inline-block;
+    font-weight: bold;
+    background-color: white;
+    color: #34433c;
+    position:relative;
+    text-decoration: underline;
+    font-size:80%;
+    right:145px;
+    bottom:18px;
+    max-width:50px;
 }
 
+#page{
+    font-size:80%;
+    display:inline-block;
+    position: relative;
+    padding-top:10px;
+    top:30px;
+    right:17px;
+}
+
+form{
+    
+    padding-top:0px;
+}
+#info{
+    box-sizing: border-box;
+    position:relative;
+    margin:0px;
+    background-color: white;
+    height:0px;
+}
+#info p{
+    width:auto;
+}
+#postinfo{
+    position:relative;
+    width:300px;
+    right:80px;
+}
+#home{
+    display: inline;
+    position:relative;
+    bottom:50px;
+    font-size:200%;
+    
+}
 

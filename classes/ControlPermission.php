@@ -13,6 +13,7 @@
     public function control_perm_comment($connection, $comment_id, $session){
         $COMMENT = new Comment();
         $USER= new User();
+        $VIEWPERM= new ViewPermission();
         $author_info= $COMMENT->fetch_comment_author_info($connection, $comment_id);
         $author_id= $author_info['author_id'];
         $privileges=$USER->privileges($connection, $session, $author_id);

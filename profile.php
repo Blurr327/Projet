@@ -11,6 +11,8 @@ require_once("classes/User.php");
 require_once("classes/ControlUser.php");
 require_once("classes/ViewUser.php");
 require_once("classes/Sub.php");
+require_once("classes/ViewProfile.php");
+require_once("classes/ViewTimeline.php");
 require_once("classes/ViewPermission.php");
 require_once("classes/SeriesOfPosts.php");
 require_once("classes/ViewSeriesOfPosts.php");
@@ -34,7 +36,7 @@ if(!isset($_SESSION['id'])) echo $VIEWPERM->forbidden_page();
 else{ 
     switch($action){
         case 'show':
-            echo $CONTROLSER->control_series_of_posts($connection, $_GET, $_SESSION, 'author_id', 'profile.php', $_SERVER, $_POST);
+            echo $CONTROLSER->control_series_of_posts($connection, $_GET, $_SESSION, 'profile', $_SERVER, $_POST);
             break;
         case 'search':
             echo $CONTROLUSER->control_search_page($connection, $_GET, $_POST, $_SERVER);

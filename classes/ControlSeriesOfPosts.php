@@ -1,67 +1,127 @@
 <?php class ControlSeriesOfPosts{
 
 
-    public function control_drop_down_for_pages($connection, $session, $timeline_or_user, $user_id_profile, $show){
+    public function control_drop_down_for_pages($connection, $posts_array, $show){
         $SERPOST= new SeriesOfPosts();
         $VIEWSER = new ViewSeriesOfPosts();
-        $num_pages= $SERPOST->get_num_pages_for_timeline($connection, $session, $timeline_or_user, $user_id_profile);
+        $num_pages= $SERPOST->get_num_pages($posts_array);
         return $VIEWSER->display_drop_down_for_pages($num_pages, $show);
     }
 
     public function control_profile_info_block($connection , $user_id_profile){
         $VIEWSER = new ViewSeriesOfPosts();
+        $VIEWPROFILE= new ViewProfile();
         $USER=new User();
         $user_info=$USER->fetch_user_byid($connection, $user_id_profile);
         $line = mysqli_fetch_assoc($user_info);
-        return $VIEWSER->display_profile_info_block($line['nickname'], $line['firstname'], $line['lastname']);
+        return $VIEWPROFILE->display_profile_info_block($line['nickname'], $line['firstname'], $line['lastname']); 
     }
 
-    public function control_series_of_posts($connection, $get, &$session, $timeline_or_user, $url, $server, $data){ // $timeline_or_user peut contenir soit : author_id soit : follower_id 
+    public function control_no_posts_msg($page, $posts_array){
+        $VIEWPROFILE= new ViewProfile();
+        $VIEWTL= new ViewTimeline();
+        if(count($posts_array) != 0) return '';
+        switch($page){
+            case 'profile':
+                return $VIEWPROFILE->display_no_posts_msg_profile(); 
+                break;
+            case 'timeline':
+                return $VIEWTL->display_no_posts_msg_timeline(); 
+                break;
+        }
+    }  
+
+    public function control_check($order, $which_check){
+        $checked="";
+        switch($which_check){
+            case 'like':
+                if($order === 'likes') $checked='checked';
+                break;
+            case 'recent':
+                if($order === 'posts_creation_date') $checked='checked';
+                break;
+        }
+        return $checked;
+    }
+
+    public function control_additional_block($connection,$page, $get, $session, $server, $data){
+        $CONTROLSUB = new ControlSub();
+        switch($page){
+            case 'profile':
+                $user_id_profile=(isset($get['userid'])) ? abs(intval($get['userid'])) : 1;
+                $profile_info_block=$this->control_profile_info_block($connection, $user_id_profile);
+                $follow_block = $CONTROLSUB->control_follower_and_followed($connection, $get, $session, $server, $data, $user_id_profile);
+                return $profile_info_block . $follow_block;
+            case 'timeline':
+                return "<h2 id='home'>Home</h2>";
+        }
+    }
+
+    public function control_nav($page, $order, $session){
+        $VIEWPROFILE= new ViewProfile();
+        $VIEWTL = new ViewTimeline();
+        switch($page){
+            case 'profile':
+                return $VIEWPROFILE->display_nav($order);
+            case 'timeline':
+                $current_user_id=$session['id'];
+                return $VIEWTL->display_nav($order, $current_user_id);
+            
+        }
+    }
+
+    public function control_hidden_data($page, $order, $show, $get){
+        switch($page){
+            case 'profile':
+                $user_id_profile=$get['userid'];
+                return array("userid" => $user_id_profile);
+            case 'timeline':
+                return array();
+        }
+    }
+
+    public function control_hidden_block($hidden){
+        $hidden_block='';
+        foreach($hidden as $key => $data){
+            $hidden_block .= "<input type=hidden name='$key' value='$data'>";
+        }
+        return $hidden_block;
+    }
+
+    public function control_series_of_posts($connection, $get, &$session, $page, $server, $data){
         $POST = new Post();
         $CONTROLPOST = new ControlPost();
         $VIEWSER = new ViewSeriesOfPosts();
         $SERPOST= new SeriesOfPosts();
         $CONTROLSUB = new ControlSub();
         $VIEWSUB = new ViewSub();
-        $user_id_profile=(isset($get['userid'])) ? abs(intval($get['userid'])) : 1;
+
+        $SERPOST->update_session_order($session, $get);
+
         $order=(isset($session['order'])) ? $session['order'] : htmlspecialchars($get['order']);
+        $show=(abs(intval($get['show'])) === 0) ? 1 :abs(intval($get['show']));
 
-        if(!isset($session['order']) || isset($get['dropdown'])){ // pour garder l'ordre préféré pendant la session
-            $session['order']=htmlspecialchars($get['order']);
-            $order=htmlspecialchars($get['order']);
-        }
+        
 
-        $no_posts_msg=($timeline_or_user === 'follower_id') ? "<h3>Aucun poste... <a href='profile.php?action=search&show=10'>Suivez quelqu'un</a></h3>" : "<h3>Cet utilisateur n'a aucun poste</h3>"; // préparation du message affiché quand il y a aucun poste
-        $no_posts= ($POST->get_number_of_posts($connection, $session, $timeline_or_user, $user_id_profile) === 0) ? $no_posts_msg : '';
+        $checked_order_like= $this->control_check($order, 'like');
+        $checked_order_recent= $this->control_check($order, 'recent');
 
-        $checked_order_like=($order==='likes') ? 'checked' : ''; // mise à jour du statut de l'ordre
-        $checked_order_recent=($order==='posts_creation_date') ? 'checked': '';
+        $additional_block= $this->control_additional_block($connection, $page, $get, $session, $server, $data);
 
-        $show=(abs(intval($get['show'])) === 0) ? 1 :abs(intval($get['show'])) ; // valeur du paramétre est modifiable depuis le navigateur, donc il faut se rassurer du fait que c'est un nombre strictement postitive
+        $nav= $this->control_nav($page, $order, $session);
+        $hidden=$this->control_hidden_data($page, $order, $show, $get);
+        $hidden_block= $this->control_hidden_block($hidden);
 
-        $posts=$CONTROLPOST->control_timeline_or_user_posts($connection, $session, $get, $order, $timeline_or_user); // accès aux postes
+        $posts_array = $SERPOST->get_posts_array($connection, $get, $session, $page, $order);
 
-        $pages_drop_down_display= $this->control_drop_down_for_pages($connection, $session, $timeline_or_user, $user_id_profile, $show); // pour l'affichage de la liste déroulante
+        $posts= $CONTROLPOST->control_posts($posts_array, $order, $show, $get);
 
+        
+        $no_posts_msg= $this->control_no_posts_msg($page, $posts_array);
+        
+        $pages_drop_down_display=$this->control_drop_down_for_pages($connection, $posts_array, $show);
 
-        switch($timeline_or_user){
-            case 'author_id':
-                $nav="<a href='timeline.php?show=1&order=$order'>Revenir au fil d'actualité</a>";
-                $follow_block= $CONTROLSUB->control_follower_and_followed($connection, $get, $session, $server, $data, $user_id_profile);
-                $url="profile.php?action=show&userid=$user_id_profile&show=1&order=$order";
-               
-                $profile_info_block= $this->control_profile_info_block($connection, $user_id_profile);
-                break;
-            default:
-                $current_user_id=$session['id']; // préparation de la partie navigation
-                $nav="<a id='myprofile' href='profile.php?action=show&userid=$current_user_id&show=1&order=$order'>Mon Profile</a>
-                <a id='search' href='profile.php?action=search&show=10'>Recherche</a> <a id='postcreate' href='post.php?action=createpost'>Publier</a>";
-                $follow_block= '';
-                $profile_info_block='';
-                break;
-        }
-          
-
-        return $VIEWSER->display_series_of_posts($nav,$show,$pages_drop_down_display ,$checked_order_like, $checked_order_recent, $no_posts, $posts, $url, $follow_block, $profile_info_block);
+        return $VIEWSER->display_series_of_posts($nav,$show,$pages_drop_down_display ,$checked_order_like, $checked_order_recent, $no_posts_msg, $posts, $hidden_block, $additional_block, $page);
     }
+
 } ?>

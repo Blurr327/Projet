@@ -25,7 +25,7 @@
 
     public function control_mod_page($connection, $get, $session, $server, $data){
         $USER = new User();
-        $PERM = new Permission();
+        $PERM = new ViewPermission();
         $VIEWCOM = new ViewComment();
         $COM = new Comment();
         $field_error="";

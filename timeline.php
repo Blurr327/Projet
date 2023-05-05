@@ -8,6 +8,8 @@ require_once("classes/ControlPost.php");
 require_once("classes/ViewPost.php");
 require_once("classes/Verification.php");
 require_once("classes/User.php");
+require_once("classes/ViewProfile.php");
+require_once("classes/ViewTimeline.php");
 require_once("classes/ViewPermission.php");
 require_once("classes/SeriesOfPosts.php");
 require_once("classes/ViewSeriesOfPosts.php");
@@ -23,5 +25,5 @@ $VIEWSER = new ViewSeriesOfPosts();
 $CONTROLSER = new ControlSeriesOfPosts();
 $connection = $DB->connect();
 if(!isset($_SESSION['id'])) echo $VIEWPERM->forbidden_page();
-else echo $CONTROLSER->control_series_of_posts($connection, $_GET, $_SESSION, 'follower_id', 'timeline.php', $_SERVER, $_POST);
+else echo $CONTROLSER->control_series_of_posts($connection, $_GET, $_SESSION, 'timeline', $_SERVER, $_POST);
 ?>

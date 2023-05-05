@@ -20,18 +20,19 @@ class Post{
 
     public function insert_post($connection,$text,$author_id,$title){ // insère un post à la base de donnée 
         $DB=new DataBase();
-        $req="INSERT INTO posts(post, creation_date, author_id, post_title) VALUES ('" . mysqli_real_escape_string($connection,$text) . "','" .date('Y-m-d h:i:s'). "', $author_id,'".mysqli_real_escape_string($connection,$title)."')";
+        $req="INSERT INTO posts(post, creation_date, author_id, post_title) VALUES ('" . mysqli_real_escape_string($connection,$text) . "','" .date('Y-m-d H:i:s'). "', $author_id,'".mysqli_real_escape_string($connection,$title)."')";
         return $DB->query($connection,$req);
     }
 
-    public function get_number_of_posts($connection, $session, $timeline_or_user, $user_id_profile){
-        $DB = new DataBase();
-        $user_id= $session['id'];
+    public function get_number_of_posts_profile($connection, $user_id_profile){
+        $DB= new DataBase();
         $req_user= "SELECT * FROM posts WHERE author_id=$user_id_profile";
-        $req_timeline="SELECT * FROM posts, follower_and_followed WHERE follower_id=$user_id AND followed_id=author_id";
-        $req = ($timeline_or_user ==='follower_id') ? $req_timeline : $req_user;
         $result = $DB->query($connection, $req);
         return mysqli_num_rows($result);
+    }
+
+    public function get_number_of_posts($posts_array){ 
+        return count($posts_array);
     }
 
     public function delete_post($connection, $post_id){ // supprimer un post
@@ -51,27 +52,45 @@ class Post{
         return $DB->query($connection,$req);
     }
 
-    public function get_posts($connection,$user_id,$order, $timeline_or_user, $user_id_profile){ 
-        
-        $list_of_posts=array();
+    public function add_num_comments_and_likes($connection,&$rows){
         $COMMENT = new Comment();
         $LIKE = new Like();
-        $DB=new DataBase();
-        $req_user="SELECT posts.post_id AS posts_post_id, author_id AS posts_author_id, posts.creation_date AS posts_creation_date, post_title, nickname FROM posts, users WHERE posts.author_id=$user_id_profile AND posts.author_id=id ORDER BY posts.creation_date DESC";
-
-        $req_timeline="SELECT posts.post_id AS posts_post_id, followed_id AS posts_author_id,posts.creation_date AS posts_creation_date,post_title, nickname FROM follower_and_followed, posts, users WHERE follower_id=$user_id AND followed_id=author_id AND followed_id=id ORDER BY posts.creation_date DESC"; 
-
-        $req =($timeline_or_user === 'follower_id') ? $req_timeline : $req_user;
-        $result=$DB->query($connection,$req);
-        $rows= $result->fetch_all(MYSQLI_ASSOC);
         foreach($rows as $key =>$post_array){
             $post_array['num_likes']=$LIKE->get_num_likes($connection, $post_array['posts_post_id']);
             $post_array['num_comments']=$COMMENT->get_num_comments($connection, $post_array['posts_post_id']);
             $rows[$key]=$post_array;
         }
-        if($order==='likes'){
-            array_multisort(array_column($rows, 'num_likes'), SORT_DESC, $rows);
-        }
+    }
+
+    public function get_posts_for_profile($connection, $order, $user_id_profile){
+        $COMMENT = new Comment();
+        $LIKE = new Like();
+        $DB=new DataBase();
+        $req="SELECT posts.post_id AS posts_post_id, author_id AS posts_author_id, posts.creation_date AS posts_creation_date, post_title, nickname FROM posts, users WHERE posts.author_id=$user_id_profile AND posts.author_id=id ORDER BY posts.creation_date DESC";
+        $result=$DB->query($connection,$req);
+        $rows= $result->fetch_all(MYSQLI_ASSOC);
+        $this->add_num_comments_and_likes($connection,$rows);
+
+        if($order==='likes') array_multisort(array_column($rows, 'num_likes'), SORT_DESC, $rows);
+        
+        return $rows;
+    }
+
+    public function get_posts_for_timeline($connection,$user_id,$order){  // change to get_posts_for_timeline
+        
+        $COMMENT = new Comment();
+        $LIKE = new Like();
+        $DB=new DataBase();
+
+        $req="SELECT posts.post_id AS posts_post_id, followed_id AS posts_author_id,posts.creation_date AS posts_creation_date,post_title, nickname FROM follower_and_followed, posts, users WHERE follower_id=$user_id AND followed_id=author_id AND followed_id=id ORDER BY posts.creation_date DESC"; 
+
+        
+        $result=$DB->query($connection,$req);
+        $rows= $result->fetch_all(MYSQLI_ASSOC);
+         $this->add_num_comments_and_likes($connection,$rows);
+    
+        if($order==='likes') array_multisort(array_column($rows, 'num_likes'), SORT_DESC, $rows);
+
         return $rows;
     }
 
@@ -159,13 +178,10 @@ class Post{
         $req_errors=array();
         $error_msgs=array();
         $required=array("commenttext");
+     
 
         $post_id=(abs(intval($get['postid'])) === 0) ? 1 : abs(intval($get['postid']));// valeur du paramétre est modifiable depuis le navigateur, donc il faut se rassurer du fait que c'est un nombre strictement postitive
 
-        $VER->prepare_data($data);
-
-        $VER->update_field_error_variables($data, $required, $error_msgs);
-        $comment_field_error = $error_msgs['commenttext'];
         
         if(!empty($data['like'])){
             $LIKE->like_post($connection, $session['id'], $post_id); // l'ajout du like à la base de donnée
@@ -177,16 +193,19 @@ class Post{
 
             $VER->prepare_data($data);
 
-            $VER->update_field_error_variables($data, $required, $error_msgs);
+            $ok=$VER->update_field_error_variables($data, $required, $error_msgs);
             $comment_field_error = $error_msgs['commenttext'];
-
-            if(!empty($comment_field_error)){
+            
+            if($ok){
+             
              $COMMENT->insert_comment($connection,$data['commenttext'],$post_id, $session['id']); // l'ajout du commentair à la base de donnée
             }
             return $comment_field_error;
         }
 
     }
+
+    
 
 
 

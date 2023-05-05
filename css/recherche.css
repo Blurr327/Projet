@@ -1,0 +1,111 @@
+* {
+    background-color: #34433c;
+}
+body,h3,input[type="submit"],input[type="reset"]  {
+    text-align:center;
+    color:white;
+    font-family:'Times New Roman';
+    font-weight:lighter;
+}
+h2:not(.usernick) {
+    font-weight:bold;
+    display:inline-block;
+    margin-top:13px;
+
+    font-size:220%;
+    margin-bottom:100px;
+}
+#homeh{
+    position: absolute;
+    display:inline-block;
+    margin-top:13px;
+    font-weight:lighter;
+    font-size:280%;
+    margin-bottom:0px;
+    right: 1217px;
+    text-decoration: underline solid white;
+}
+h3{
+
+    font-size:110%;
+}
+input[type="submit"]{
+    transition:all .3s ease-out;
+    background-color: white;
+      border-radius: 10px;
+      border:2px solid white;
+      color:#34433c;
+      font-size:110%;
+      padding:2px;
+      
+}
+
+input[type="submit"]:hover{
+    font-size:115%;
+    transition:all .3s ease-in;
+}
+a:not(#homebutton,#affplus, #affmoins, .userlink) {
+    color:white;
+    font-weight:lighter;
+    font-family:'Times New Roman';
+    text-decoration: none;
+}
+#homebutton{
+    color: white;
+}
+a:not(#homebutton,#affplus, #affmoins, .userlink) {
+    
+    display:inline;
+    align-items: center;
+    justify-content: center;
+    color:white;
+    box-sizing:border-box;
+    background-color:#34433c;
+    border:2px solid #34433c;
+    border-radius:10px;
+    margin:5px;
+    height:50%;
+    background-color:white;
+    color:#34433c;
+    padding:5px;
+    transition:all .3s ease-out;
+}
+
+
+
+
+ textarea{
+        border:2px solid white;
+        border-radius:5px;
+        background-color:white;
+        color:#34433c;
+        margin:5px;
+        font-size:110%;
+        position:relative;
+        top:7px;
+    }
+    ::placeholder{
+        font-family:'Times New Roman';
+        font-weight:lighter;
+    }
+form{
+    margin:20px;
+}
+#affplus, #affmoins{
+    text-decoration: none;
+    color:white;
+    margin:4px;
+}
+
+#users{
+    display: inline-block;
+    border:1px solid white;
+    border-radius:1px;
+    width:300px;
+}
+
+.usernick{
+    text-decoration: underline;
+    color:white;
+    font-size:90%;
+}

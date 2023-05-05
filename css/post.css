@@ -1,0 +1,227 @@
+* {
+    background-color: #34433c;
+}
+body,h3,input[type="submit"],input[type="reset"]   {
+    text-align:center;
+    color:white;
+    font-family:'Times New Roman';
+    font-weight:lighter;
+}
+#createdby{
+    
+    position:relative;
+    top:30px;
+    right:270px;
+    display:inline-block;
+    font-size:120%;
+}
+#authornick{
+    
+    font-weight: bolder;
+    color: white;
+    text-decoration: underline solid white;
+}
+#title {
+    position:relative;
+    left:261px;
+    max-width:900px;
+    display:block;
+    margin-top:0px;
+    font-weight:bold;
+    font-size:230%;
+    top:30px;
+    margin-bottom:100px;
+}
+#homeh{
+    position: absolute;
+    display:inline-block;
+    margin-top:13px;
+    font-weight:lighter;
+    font-size:280%;
+    margin-bottom:0px;
+    right: 1217px;
+    text-decoration: underline solid white;
+}
+#homebutton{
+    color: white;
+}
+h3{
+
+    font-size:110%;
+}
+input[type="submit"]{
+    transition:all .3s ease-out;
+    background-color: white;
+      border-radius: 10px;
+      border:2px solid white;
+      color:#34433c;
+      font-size:110%;
+      padding:2px;
+}
+input[name='like'],input[name='unlike']{
+    border:0px;
+    color:white;
+    background-color: #34433c;
+
+    transition:all .3s ease-out;
+    padding-right:6px;
+    padding-left:6px;
+    font-size:230%;
+}
+
+input[type="submit"]:hover:not(input[name='like']:hover,input[name='unlike']:hover){
+
+    border:3px solid white;
+    transition:all .3s ease-in;
+}
+a:not(#homebutton, #authornick, #privilege a, #comment_author, #commenttext,#affplus, #affmoins) {
+    color:white;
+    font-weight:lighter;
+    font-family:'Times New Roman';
+    text-decoration: none;
+}
+#privilege a{
+    color:white;
+    font-weight:lighter;
+    font-family:'Times New Roman';
+    margin:10px;
+}
+a:not(#homebutton, #authornick, #privilege a, #comment_author, #commenttext,#affplus, #affmoins) {
+    
+    display:inline;
+    align-items: center;
+    justify-content: center;
+    color:white;
+    box-sizing:border-box;
+    background-color:#34433c;
+    border:2px solid #34433c;
+    border-radius:10px;
+    margin:5px;
+    height:50%;
+    background-color:white;
+    color:#34433c;
+    padding:5px;
+    transition:all .3s ease-out;
+}
+
+
+    
+ textarea{
+        border:2px solid white;
+        border-radius:5px;
+        background-color:white;
+        color:#34433c;
+   
+        font-size:110%;
+        position:relative;
+        top: 20px;
+    }
+    #optionscommentaires{
+        margin:30px;
+    }
+
+
+    #commentaires {
+        
+        width:900px;
+        margin-top:40px;
+        display:inline-block;
+        padding:10px;
+        color:white;
+        background-color: #34433c;
+        max-width: 900px;
+    }
+    #commentaires p:not(a p){
+        font-size: 70%;
+        border-bottom:1px solid #34433c;
+        width:inherit;
+        display:block;
+        color:#34433c;
+        background-color: white;
+    }
+.comment{
+  
+    display:block;
+    color:#34433c;
+    background-color: white;
+}
+div .comment{
+  
+    display:block;
+    border:1px solid #34433c;
+    border-radius: 10px;
+    padding:10px 10px 0 10px;
+    font-size:70%;
+}
+div:not(#text,#commentaires, .comment){
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+#date{
+    position:relative;
+    top:30px;
+    right:270px;
+    display:inline-block;
+    opacity:.75;
+    font-size:70%;
+    
+}
+#text{
+    padding:10px 15px 10px 15px;
+    text-align: left;
+    color:white;
+    background-color: #34433c;
+    border:1px solid white;
+    border-radius: 10px;
+    display: block;
+    position: relative;
+    bottom:70px;
+    font-size:130%;
+    max-width:900px;
+}
+
+#comment_author{    
+    display:inline-block;
+    font-weight:bold;
+    text-decoration: underline solid #34433c;
+    color:#34433c;
+    background-color: white;
+    font-size:110%;
+    position:relative;
+    right:420px;
+    bottom:5px;
+    max-width:50px;
+    overflow-wrap: break-word;
+}
+#commenttext{
+    position: relative;
+    display:block;
+    text-decoration: none;
+    color:#34433c;
+    background-color: white;
+  
+    text-align: left;
+    padding-left: 10px;
+    max-width: 900px;
+}
+#affplus, #affmoins{
+    text-decoration: none;
+    color:white;
+    margin:4px;
+}
+#commenttext p{
+    position: relative;
+    display:block;
+    text-decoration: none;
+    color:#34433c;
+    background-color: white;
+  
+    text-align: left;
+    padding-left: 10px;
+    max-width: 900px;
+    overflow-wrap: break-word;
+}
+
+
+

@@ -1,6 +1,7 @@
 <?php class ViewPost{
 
     public function display_post_page($post_title, $creation_date, $text, $author_id, $author_nickname, $modify_post_button, $delete_post_button, $post_id, $show, $like_status, $comment_field_error,$comments,$display_more, $display_less, $order){
+        $check= ($like_status === 'like') ? '☐' : '☑';
             return "
             <!DOCTYPE html>
             <html lang='fr'>
@@ -8,22 +9,29 @@
                     <title>Blackboard</title>
                     <meta charset='UTF-8'>
                     <meta http-equiv='Content-type' content='text/html;charset=UTF-8'>
+                    <link rel='stylesheet' href='css/post.css'>
                 </head>    
                 <body>
-                    <nav>
-                    <a href='timeline.php?show=1&order=$order'><pre><< Revenir au fil d'actualité</pre></a>
-                    </nav>
+                    
                 
-                    <header>$post_title</header>
+                  
+                    <h1 id='homeh'><a id='homebutton' href='timeline.php?show=1&order=likes'>Blackboard</a></h1>
+                 
+
+                    
+                    <p id='createdby'>Créé par <a id='authornick' href='profile.php?action=show&userid=$author_id&show=1'>$author_nickname</a></p>
                     <p id='date'>$creation_date</p>
-                    <div id='text'>
-                        <p>$text</p><br>
+                    <h2 id='title'>$post_title</h2>
+                    
+                    <div id='text-block'>
+                        <p id='text'>$text</p>
                     </div>
-                    <p id='createdby'>Crée par <a href='profile.php?action=show&userid=$author_id&show=1'>$author_nickname</a></p>
+                    <div id='privilege'>
                     $modify_post_button
                     $delete_post_button
+                    </div>
                     <form action='post.php?action=show&postid=$post_id&show=$show' method='post'>
-                        <input type='submit' name='$like_status' value='$like_status'><br>
+                        <input type='submit' name='$like_status' value='$check'><br>
                         <textarea id='postcomment' name='commenttext' rows='3' cols='60' placeholder='Commentaire...'></textarea>
                         <input type='submit' name='commentaire' value='Poster'><br>
                         $comment_field_error
@@ -31,10 +39,10 @@
                     <div id='commentaires'>
                         $comments
                     </div>
-                    <span id='optionscommentaires'>
-                    <a href='post.php?action=show&postid=$post_id&show=$display_more'>Afficher plus...</a>
-                    <a href='post.php?action=show&postid=$post_id&show=$display_less'>Afficher moins...</a>
-                    </span>
+                    <div id='optionscommentaires'>
+                    <a id='affplus' href='post.php?action=show&postid=$post_id&show=$display_more'>↓</a>
+                    <a id='affmoins' href='post.php?action=show&postid=$post_id&show=$display_less'>↑</a>
+                    </div>
                 </body>
             </html>
             ";
@@ -47,12 +55,11 @@
                 <head>
                     <title>Blackboard</title>
                     <meta charset='UTF-8'>
+                    <link rel='stylesheet' href='css/postcreate.css'>
                 </head>
                 <body>
-                    <nav>
-                        <a href='timeline.php?show=1&order=recent'><pre>Revenir au fil d'actualité</pre></a>
-                    </nav>
-                    <h3>Ajouter votre publication</h3>
+                    <h1 id='homeh'><a id='homebutton' href='timeline.php?show=1&order=likes'>Blackboard</a></h1>
+                    <h2>Ajouter votre publication</h2>
                     <form action='post.php?action=createpost' method='post'>
                         <textarea id='titlecreate' name='titlecreate' rows='2' cols='60' placeholder='Votre titre...'></textarea><br>
                         $title_error<br>
@@ -72,12 +79,12 @@
                 <head>
                     <title>Blackboard</title>
                     <meta charset='UTF-8'>
+                    <link rel='stylesheet' href='css/postmod.css'>
                 </head>
                 <body>
-                    <nav>
-                      <a href='timeline.php?show=1&order=recent'><pre>Revenir au fil d'actualité</pre></a>
-                    </nav>
-                    <h3>Modifier Votre publication</h3>
+                  
+                    <h1 id='homeh'><a id='homebutton' href='timeline.php?show=1&order=likes'>Blackboard</a></h1>
+                    <h2>Modifier Votre publication</h2>
                     <form action='post.php?action=modpost&postid=$post_id' method='post'>
                         <textarea id='titlemod' name='titlemod' rows='2' cols='60'>$old_post_title</textarea><br>
                         $title_error<br>
@@ -93,12 +100,12 @@
         public function display_post_on_timeline($post_title,$post_id, $author_nickname,$author_id,$num_likes, $num_comments, $creation_date){ // affiche un post (son apparence sur le timeline)
             return "
              <div class='post'>
-              <a class='author' href='profile.php?action=show&userid=$author_id&show=1'>$author_nickname</a><br>
+              <a class='author' href='profile.php?action=show&userid=$author_id&show=1'>by $author_nickname</a><br>
               <span class='thumbnail'>
-              <h3><a id='posttitle' href='post.php?action=show&postid=$post_id&show=5'>$post_title</a></h3>
-                <p id='numlikes'>Likes : $num_likes</p>
-                <p id='numcomments'>Commentaires : $num_comments</p>
-                <p id='creationdate'>Créé le : $creation_date</p>
+                <a id='posttitle' href='post.php?action=show&postid=$post_id&show=5'><p>$post_title</p></a>
+              
+                <p id='postinfo'>Likes : $num_likes Commentaires : $num_comments le :$creation_date</p>
+               
               </span>
             </div>
             ";

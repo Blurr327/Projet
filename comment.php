@@ -8,7 +8,7 @@ require_once("classes/ControlComment.php");
 require_once("classes/Post.php");
 require_once("classes/Verification.php");
 require_once("classes/User.php");
-require_once("classes/Permission.php");
+require_once("classes/ViewPermission.php");
 require_once("classes/ControlPermission.php");
 require_once("classes/ViewPermission.php");
 $DB = new DataBase();
@@ -16,7 +16,7 @@ $POST= new Post();
 $COMMENT= new Comment();
 $CONTROLCOM= new ControlComment();
 $VIEWCOM= new ViewComment();
-$PERM= new Permission();
+$PERM= new ViewPermission();
 $CONTROLPERM= new ControlPermission();
 $connection= $DB->connect();
 if(!isset($_SESSION['id'])){

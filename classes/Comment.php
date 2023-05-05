@@ -4,7 +4,7 @@ class Comment{
 
     public function insert_comment($connection,$text,$post_id,$author_id){ // ajoute une commentaire
         $DB=new DataBase();
-        $req="INSERT INTO comments(comment,author_id, post_id,creation_date) VALUES ('". mysqli_real_escape_string($connection,$text) . "',$author_id, $post_id, '" . date("Y-m-d h:i:s") . "')";
+        $req="INSERT INTO comments(comment,author_id, post_id,creation_date) VALUES ('". mysqli_real_escape_string($connection,$text) . "',$author_id, $post_id, '" . date("Y-m-d H:i:s") . "')";
         return $DB->query($connection,$req);
     }
 
@@ -28,7 +28,7 @@ class Comment{
     public function delete_comment($connection,$comment_id){ // supprime le commentaire
         $DB=new DataBase();
         $USER= new user();
-        $PERM= new Permission();
+        $PERM= new ViewPermission();
         $author_info=$this->fetch_comment_author_info($connection, $comment_id);
         $req="DELETE FROM comments WHERE comment_id=$comment_id";
         $DB->query($connection,$req);
@@ -54,8 +54,8 @@ class Comment{
     public function display_comment_under_post($author_id, $creation_date,$comment, $nickname, $comment_id){ // affiche une commentaire
         return "
         <div class='comment'>
-            <a class='comment_author' href='profile.php?action=show&userid=$author_id&show=1'>$nickname</a>
-            <a href='comment.php?action=show&commentid=$comment_id'><p class='commentcontent'>$comment</p></a>
+            <a class='comment_author' href='profile.php?action=show&userid=$author_id&show=1'>$nickname : </a>
+            <a href='comment.php?action=show&commentid=$comment_id'>$comment</a>
             <p class='date'>$creation_date</p>
         </div><br>
         ";
@@ -87,7 +87,7 @@ class Comment{
         $comment_id= (abs(intval($_GET['commentid'])) === 0) ? 1 :$_GET['commentid'];
         $VER->prepare_data($data);
         $all_good=$VER->update_field_error_variables($data,$required, $error_msgs);
-        $field_error=$error_msgs['newcomment'];
+        $field_error=$error_msgs['newcomsment'];
         if($all_good){
             $this->modify_comment($connection, $comment_id, $data['newcomment']);
             return false;

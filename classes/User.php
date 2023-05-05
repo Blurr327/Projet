@@ -16,7 +16,7 @@ class User{
 
     public function insert_user($connection,$firstname,$lastname,$nickname,$password){ // ajoute l'utilisateur à la base de donnée
         $DB= new DataBase();
-        $req='INSERT INTO users(firstname, lastname, nickname, password, signup_date) VALUES (\''. mysqli_real_escape_string($connection,$firstname) . '\',\''. mysqli_real_escape_string($connection,$lastname)  . '\',\'' . mysqli_real_escape_string($connection,$nickname) . '\',\''. password_hash(mysqli_real_escape_string($connection,$password), PASSWORD_BCRYPT, ['cost' => 12]) .'\',\''. date("Y-m-d h:i:s") .'\')'; // on utilise l'algorithme blowfish pour hasher le mot de passe
+        $req='INSERT INTO users(firstname, lastname, nickname, password, signup_date) VALUES (\''. mysqli_real_escape_string($connection,$firstname) . '\',\''. mysqli_real_escape_string($connection,$lastname)  . '\',\'' . mysqli_real_escape_string($connection,$nickname) . '\',\''. password_hash(mysqli_real_escape_string($connection,$password), PASSWORD_BCRYPT, ['cost' => 12]) .'\',\''. date("Y-m-d H:i:s") .'\')'; // on utilise l'algorithme blowfish pour hasher le mot de passe
         return $DB->query($connection,$req);
     }
     
